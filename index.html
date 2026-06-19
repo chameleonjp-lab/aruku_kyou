@@ -1,0 +1,2320 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>アルク教｜創作設定ページ</title>
+  <meta
+    name="description"
+    content="歩くことを祈りとする創作上の架空宗教『アルク教』の紹介ページ。歩く日も休む日も尊重する、穏やかで荘厳な世界観を紹介します。"
+  />
+  <style>
+    :root {
+      --bg-deep: #121719;
+      --bg-night: #1b2226;
+      --bg-stone: #2a2d2a;
+      --bg-paper: #e8ddc7;
+      --text-main: #f3ead7;
+      --text-dark: #25231e;
+      --text-muted: #b8aa91;
+      --sacred-gold: #bfa46a;
+      --old-bronze: #8a6f3e;
+      --moss-green: #4f6656;
+      --mist: #d8d0bf;
+      --quiet-caution: #6b4e3d;
+
+      /* Design guideline tokens: 既存カラーの役割を固定する */
+      --ui-paper: rgba(232, 221, 199, .98);
+      --ui-paper-deep: #d7c6ac;
+      --ui-paper-soft: #ded3bf;
+      --ui-paper-green: #d4ddc8;
+      --ui-paper-caution: #e5d3bd;
+      --ui-paper-warn: #dfcfba;
+      --ui-gold-line: rgba(191, 164, 106, .46);
+      --ui-gold-line-strong: rgba(191, 164, 106, .72);
+      --ui-gold-soft: rgba(191, 164, 106, .16);
+      --ui-gold-mid: rgba(191, 164, 106, .28);
+      --ui-glass: rgba(18, 23, 25, .78);
+      --ui-glass-strong: rgba(18, 23, 25, .9);
+      --ui-shadow: rgba(0, 0, 0, .32);
+      --ui-readable-muted: #5f5647;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, -apple-system, sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-main);
+      font-size: 16px;
+      line-height: 1.85;
+      overflow-x: hidden;
+      --bg-glow-opacity: .14;
+      --bg-haze-opacity: .1;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(80% 60% at 50% 20%, rgba(191, 164, 106, var(--bg-glow-opacity)), transparent 70%),
+        radial-gradient(90% 70% at 50% 85%, rgba(216, 208, 191, var(--bg-haze-opacity)), transparent 75%);
+      transition: background .8s ease, opacity .8s ease;
+    }
+
+    body.tone-symbol { --bg-glow-opacity: .16; --bg-haze-opacity: .09; }
+    body.tone-believer { --bg-glow-opacity: .13; --bg-haze-opacity: .1; }
+    body.tone-first-step { --bg-glow-opacity: .11; --bg-haze-opacity: .08; }
+    body.tone-aruku-god { --bg-glow-opacity: .16; --bg-haze-opacity: .12; }
+    body.tone-guideposts { --bg-glow-opacity: .12; --bg-haze-opacity: .1; }
+    body.tone-record { --bg-glow-opacity: .15; --bg-haze-opacity: .11; }
+    body.tone-terms { --bg-glow-opacity: .12; --bg-haze-opacity: .1; }
+    body.tone-daily { --bg-glow-opacity: .13; --bg-haze-opacity: .13; }
+    body.tone-taboo { --bg-glow-opacity: .08; --bg-haze-opacity: .07; }
+    body.tone-scripture { --bg-glow-opacity: .18; --bg-haze-opacity: .06; }
+    body.tone-daily-step { --bg-glow-opacity: .14; --bg-haze-opacity: .11; }
+    body.tone-faq { --bg-glow-opacity: .1; --bg-haze-opacity: .1; }
+    body.tone-closing { --bg-glow-opacity: .12; --bg-haze-opacity: .09; }
+
+    .container {
+      width: min(100% - 1.5rem, 920px);
+      margin-inline: auto;
+    }
+
+    p { margin: 0 0 1rem; }
+    h1, h2, h3 { line-height: 1.35; }
+    .skip-link { position: absolute; left: -9999px; }
+    .skip-link:focus {
+      left: 1rem;
+      top: 1rem;
+      background: var(--bg-paper);
+      color: var(--text-dark);
+      padding: .5rem .75rem;
+      border-radius: 999px;
+      z-index: 1200;
+    }
+
+    .ambient-footsteps {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .ambient-footprint {
+      position: absolute;
+      width: 18px;
+      height: 28px;
+      opacity: 0;
+      transform: translate(-50%, -50%) rotate(var(--rotate, 0deg));
+      animation: ambientFootprintFade 9s ease-out forwards;
+      pointer-events: none;
+    }
+
+    .ambient-footprint::before,
+    .ambient-footprint::after {
+      content: "";
+      position: absolute;
+      background: rgba(191, 164, 106, 0.24);
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(191, 164, 106, 0.18);
+    }
+
+    .ambient-footprint::before { width: 9px; height: 16px; left: 5px; top: 9px; }
+    .ambient-footprint::after { width: 12px; height: 8px; left: 3px; top: 0; }
+    .ambient-footprint.is-left {
+      margin-left: -7px;
+      transform: translate(-50%, -50%) rotate(calc(var(--rotate, 0deg) - 7deg));
+    }
+    .ambient-footprint.is-right {
+      margin-left: 7px;
+      transform: translate(-50%, -50%) rotate(calc(var(--rotate, 0deg) + 7deg));
+    }
+
+    @keyframes ambientFootprintFade {
+      0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--rotate, 0deg)) scale(0.96); }
+      12% { opacity: 0.14; }
+      58% { opacity: 0.1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--rotate, 0deg)) scale(1.02); }
+    }
+
+    .gateway, main, .footer { position: relative; z-index: 2; }
+
+    .gateway {
+      min-height: 100svh;
+      position: relative;
+      display: grid;
+      place-items: center;
+      padding: calc(env(safe-area-inset-top) + 1rem) 0 calc(env(safe-area-inset-bottom) + 1rem);
+      overflow: hidden;
+      background: linear-gradient(180deg, var(--bg-deep), #25302b 58%, var(--bg-night));
+    }
+
+    .mist, .path, .presence, .path-glow { position: absolute; inset: 0; pointer-events: none; }
+
+    .mist {
+      background:
+        radial-gradient(80% 40% at 52% 20%, rgba(216, 208, 191, .22), transparent),
+        radial-gradient(100% 90% at 28% 68%, rgba(216, 208, 191, .12), transparent);
+      filter: blur(2px);
+      transition: opacity .8s;
+    }
+
+    .path::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -8%;
+      width: min(92vw, 600px);
+      height: 84%;
+      transform: translateX(-50%);
+      clip-path: polygon(8% 100%, 92% 100%, 57% 0, 43% 0);
+      background: linear-gradient(180deg, rgba(42,45,42,.95), rgba(28,32,32,.96));
+      border-left: 1px solid rgba(191,164,106,.48);
+      border-right: 1px solid rgba(191,164,106,.48);
+    }
+
+    .path::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 8%;
+      width: 2px;
+      height: 44%;
+      transform: translateX(-50%);
+      background: linear-gradient(transparent, rgba(191,164,106,.7), transparent);
+    }
+
+    .presence::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 15%;
+      width: min(30vw, 220px);
+      height: 200px;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse at center, rgba(191,164,106,.34), rgba(216,208,191,.18), transparent 70%);
+      filter: blur(10px);
+      opacity: .82;
+      transition: opacity .8s, transform .8s;
+    }
+
+    .path-glow::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 9%;
+      width: min(80vw, 500px);
+      height: 8px;
+      transform: translateX(-50%) scaleX(.84);
+      background: linear-gradient(90deg, transparent, rgba(191,164,106,.48), transparent);
+      opacity: 0;
+      transition: opacity .8s, transform .8s;
+    }
+
+    .gateway__inner { position: relative; z-index: 1; text-align: center; }
+    .eyebrow { font-size: .88rem; letter-spacing: .08em; color: var(--text-muted); }
+    h1 {
+      font-size: clamp(2.4rem, 11vw, 4rem);
+      margin: .2rem 0;
+      color: var(--text-main);
+      letter-spacing: .12em;
+      text-indent: .12em;
+    }
+    .catch { font-size: 1.15rem; color: var(--sacred-gold); font-weight: 700; }
+    .intro { max-width: 34ch; margin: .8rem auto; color: var(--text-main); }
+    .note { font-size: .88rem; color: var(--text-muted); }
+
+    .button {
+      min-height: 44px;
+      border: 1px solid rgba(191, 164, 106, .55);
+      border-radius: 999px;
+      padding: .8rem 1.35rem;
+      background: var(--old-bronze);
+      color: var(--text-main);
+      font-weight: 700;
+      transition: filter .2s, transform .2s;
+      cursor: pointer;
+    }
+
+    .button:hover { filter: brightness(1.08); }
+    .button:active { transform: translateY(1px); filter: brightness(1.14); }
+
+    .step-trail {
+      position: absolute;
+      left: 50%;
+      bottom: 17%;
+      width: 170px;
+      height: 120px;
+      transform: translateX(-50%);
+    }
+
+    .step-trail span {
+      position: absolute;
+      width: 15px;
+      height: 24px;
+      background: rgba(79,102,86,.62);
+      border-radius: 44% 44% 56% 56%;
+      opacity: 0;
+    }
+
+    .step-trail span:nth-child(1) { left: 36%; bottom: 0; transform: rotate(-17deg); }
+    .step-trail span:nth-child(2) { left: 52%; bottom: 28px; transform: rotate(15deg); }
+    .step-trail span:nth-child(3) { left: 40%; bottom: 56px; transform: rotate(-12deg); }
+    body.is-stepping .step-trail span { animation: step .62s forwards; }
+    body.is-stepping .step-trail span:nth-child(2) { animation-delay: .11s; }
+    body.is-stepping .step-trail span:nth-child(3) { animation-delay: .22s; }
+    body.is-stepping .mist { opacity: .6; }
+    body.is-stepping .presence::before { opacity: 1; transform: translateX(-50%) scale(1.07); }
+    body.is-stepping .path::after { filter: brightness(1.35); }
+    body.is-stepping .path-glow::before { opacity: .75; transform: translateX(-50%) scaleX(1); }
+
+    @keyframes step { to { opacity: 1; translate: 0 -6px; } }
+
+    .main-flow { position: relative; padding: 2rem 0 2.4rem; }
+    .main-flow::before {
+      content: "";
+      position: fixed;
+      left: 14px;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(transparent, rgba(191,164,106,.32), rgba(191,164,106,.32), transparent);
+      opacity: .45;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    main, section, .container { position: relative; z-index: 1; }
+    .section { padding: 2.2rem 0 2.2rem 2.6rem; opacity: 1; transform: none; }
+    .walk-section { opacity: 1; transform: none; position: relative; }
+    body.js-enabled .walk-section {
+      opacity: .01;
+      transform: translateY(16px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    body.js-enabled .walk-section.is-visible { opacity: 1; transform: none; }
+
+    .walk-section::before {
+      content: "";
+      position: absolute;
+      top: 1.8rem;
+      left: 0;
+      width: 14px;
+      height: 22px;
+      background: var(--moss-green);
+      border-radius: 45% 45% 55% 55%;
+      opacity: .35;
+      transform: translateY(4px) rotate(-10deg);
+      box-shadow:
+        7px -6px 0 -4px rgba(79,102,86,.5),
+        7px -1px 0 -4px rgba(79,102,86,.45),
+        8px 4px 0 -4px rgba(79,102,86,.4);
+      transition: opacity .45s ease, transform .45s ease;
+    }
+
+    body.js-enabled .walk-section::before { opacity: 0; }
+    body.js-enabled .walk-section.is-visible::before { opacity: .72; transform: translateY(0) rotate(-10deg); }
+    .walk-section:nth-of-type(even)::before { left: auto; right: .35rem; transform: translateY(4px) rotate(10deg); }
+    body.js-enabled .walk-section:nth-of-type(even).is-visible::before { transform: translateY(0) rotate(10deg); }
+
+    .card {
+      background: var(--bg-paper);
+      border: 1px solid rgba(138,111,62,.42);
+      border-radius: 18px;
+      padding: 1.1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,.25);
+      color: var(--text-dark);
+    }
+
+    .section h2 {
+      color: var(--text-main);
+      margin-top: 0;
+      margin-bottom: .9rem;
+    }
+
+    .section-kicker {
+      margin: 0 0 .35rem;
+      color: var(--sacred-gold);
+      font-size: .82rem;
+      letter-spacing: .12em;
+    }
+
+    .section-lead {
+      margin: -.35rem 0 1rem;
+      color: #eadbb9;
+      opacity: .92;
+      font-weight: 700;
+    }
+
+    body.js-enabled .section-lead {
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .6s ease .12s, transform .6s ease .12s;
+    }
+
+    body.js-enabled .walk-section.is-visible .section-lead { opacity: .92; transform: none; }
+
+    .card h2, .card h3, .card p, .card li, .card strong, .card summary { color: var(--text-dark); }
+    .two-col, .doctrine-grid, .taboo-grid, .terms-grid { display: grid; gap: .9rem; }
+
+    .symbol-section { position: relative; overflow: hidden; }
+    .symbol-section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("IMG_7363.JPG");
+      background-size: cover;
+      background-position: center;
+      opacity: .05;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .symbol-section .container { position: relative; z-index: 2; }
+    .symbol-layout { display: grid; gap: 1.6rem; align-items: center; }
+    .symbol-image-wrap {
+      position: relative;
+      max-width: 340px;
+      margin: 0 auto;
+      border-radius: 50%;
+      padding: .45rem;
+      background:
+        radial-gradient(circle, rgba(191, 164, 106, 0.28), transparent 68%),
+        linear-gradient(145deg, rgba(191, 164, 106, 0.32), rgba(216, 208, 191, 0.08));
+      box-shadow: 0 24px 60px rgba(0,0,0,.42), 0 0 46px rgba(191,164,106,.16);
+      z-index: 2;
+    }
+
+    .symbol-image { display: block; width: 100%; height: auto; border-radius: 50%; }
+    .symbol-copy p { line-height: 1.85; }
+    body.js-enabled .symbol-image-wrap { opacity: .01; transform: translateY(18px) scale(.98); }
+    body.js-enabled .symbol-section.is-visible .symbol-image-wrap {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+
+    .soft-positive { background: #d4ddc8; position: relative; overflow: hidden; }
+    .soft-positive::after {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background: radial-gradient(circle, rgba(191,164,106,.2), transparent 62%);
+      opacity: 0;
+      transition: opacity .8s ease;
+      pointer-events: none;
+    }
+    .walk-section.is-visible .soft-positive::after { opacity: 1; }
+
+    .soft-caution { background: #e5d3bd; position: relative; }
+    .soft-caution::after {
+      content: "";
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      bottom: 8px;
+      width: 1px;
+      background: repeating-linear-gradient(to bottom, rgba(107,78,61,.6), rgba(107,78,61,.6) 10px, transparent 10px, transparent 16px);
+      opacity: .5;
+    }
+
+    .soft-caution li { list-style: "— "; }
+    .emphasis {
+      font-weight: 700;
+      background: rgba(191,164,106,.2);
+      padding: .8rem;
+      border-radius: 12px;
+      color: var(--text-main);
+    }
+
+    .doctrine { position: relative; }
+    .d1::before, .d2::before, .d3::before {
+      content: "";
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      opacity: .65;
+    }
+    .d1::before { width: 14px; height: 22px; border-radius: 40%; background: var(--moss-green); }
+    .d2::before { width: 20px; height: 20px; border-radius: 0 70% 0 70%; background: #6f806f; }
+    .d3::before { width: 28px; height: 28px; border: 3px solid #7d8f7f; border-radius: 50%; }
+
+    .meter-wrap { display: grid; place-items: center; margin: 1.4rem 0; }
+    .meter {
+      position: relative;
+      width: 210px;
+      aspect-ratio: 1;
+      margin: auto;
+      border-radius: 50%;
+      background: conic-gradient(var(--old-bronze) 0 32%, #7b6a4a 32% 68%, #a18f6e 68%);
+      box-shadow: 0 18px 40px rgba(0,0,0,.22);
+    }
+
+    .meter span {
+      position: absolute;
+      inset: 18%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      border-radius: 50%;
+      background: var(--bg-paper);
+      font-size: .9rem;
+      color: var(--text-dark);
+      padding: 1rem;
+    }
+
+    .meter b { position: absolute; font-size: .75rem; color: var(--text-dark); }
+    .meter b:nth-of-type(1) { top: 8%; left: 38%; }
+    .meter b:nth-of-type(2) { bottom: 18%; left: 8%; }
+    .meter b:nth-of-type(3) { bottom: 18%; right: 8%; }
+
+    .timeline { list-style: none; padding: 0; margin: 0 0 1.2rem; }
+    .timeline li {
+      position: relative;
+      padding: .65rem .9rem .75rem 2.1rem;
+      border-left: 2px solid rgba(191,164,106,.55);
+      margin-left: .5rem;
+      background: rgba(18,23,25,.12);
+      border-radius: 10px;
+      margin-bottom: .5rem;
+    }
+
+    .timeline li::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: .9rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--moss-green);
+    }
+
+    .timeline strong {
+      display: block;
+      color: var(--old-bronze);
+      margin-bottom: .2rem;
+    }
+
+    .timeline span { display: block; }
+    .ethical { background: #e6d3bd; border-color: rgba(107,78,61,.55); }
+    .center-text { font-size: 1.2rem; text-align: center; font-weight: 700; }
+    .taboo { background: #dfcfba; }
+
+    .scripture {
+      background: linear-gradient(180deg, var(--bg-night), var(--bg-deep));
+      color: var(--text-main);
+      border: 1px solid rgba(191,164,106,.52);
+      border-radius: 18px;
+      padding: 2rem 1.1rem;
+      text-align: center;
+      box-shadow: inset 0 0 0 1px rgba(216,208,191,.14);
+    }
+
+    .scripture h2 { color: var(--sacred-gold); }
+    .scripture p { color: var(--text-main); }
+    .scripture-lines p { opacity: 1; transform: none; }
+    body.js-enabled .scripture-lines p {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+
+    body.js-enabled .walk-section.is-visible .scripture-lines p { opacity: 1; transform: none; }
+    body.js-enabled .walk-section.is-visible .scripture-lines p:nth-child(2) { transition-delay: .15s; }
+    body.js-enabled .walk-section.is-visible .scripture-lines p:nth-child(3) { transition-delay: .3s; }
+
+    .faq details {
+      background: linear-gradient(180deg, rgba(42,45,42,.08), rgba(42,45,42,.02));
+      border: 1px solid rgba(138,111,62,.25);
+      border-radius: 10px;
+      padding: .55rem .75rem;
+      margin-bottom: .5rem;
+    }
+
+    .faq summary {
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      padding: .25rem 0 .25rem .65rem;
+      border-left: 2px solid rgba(191,164,106,.6);
+    }
+
+    .faq details p { margin: .2rem 0 0; line-height: 1.95; }
+    body.js-enabled .faq details p {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateY(-2px);
+      transition: max-height .35s ease, opacity .3s ease, transform .3s ease, padding-top .3s ease;
+    }
+    body.js-enabled .faq details[open] p {
+      max-height: 420px;
+      opacity: 1;
+      transform: none;
+      padding-top: .35rem;
+    }
+
+    .closing { text-align: center; }
+    .closing h2 { color: var(--text-main); }
+
+    .footer {
+      text-align: center;
+      padding: 1.6rem 1rem calc(6.4rem + env(safe-area-inset-bottom));
+      color: var(--text-muted);
+      font-size: .9rem;
+      background: var(--bg-deep);
+    }
+
+    .walk-counter {
+      position: fixed;
+      right: .7rem;
+      bottom: calc(.8rem + env(safe-area-inset-bottom));
+      z-index: 1000;
+      background: rgba(18,23,25,.78);
+      border: 1px solid rgba(191,164,106,.35);
+      border-radius: 999px;
+      padding: .45rem .75rem;
+      font-size: .82rem;
+      color: var(--text-main);
+      backdrop-filter: blur(2px);
+      display: none;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .walk-counter strong { color: var(--sacred-gold); }
+    body.js-enabled .walk-counter { display: flex; }
+    body.arrived-symbol #symbol { box-shadow: 0 0 0 1px rgba(191,164,106,.42), 0 0 22px rgba(191,164,106,.2); }
+
+    .stone-nav {
+      position: fixed;
+      right: .38rem;
+      bottom: 4.2rem;
+      display: none;
+      flex-direction: column;
+      gap: .35rem;
+      z-index: 1000;
+    }
+
+    body.js-enabled.content-entered .stone-nav {
+      display: flex;
+    }
+
+    .stone-dot {
+      width: 8px;
+      height: 13px;
+      border-radius: 6px;
+      background: rgba(216,208,191,.32);
+      border: 1px solid rgba(191,164,106,.35);
+    }
+
+    .stone-dot.is-active { background: rgba(191,164,106,.8); box-shadow: 0 0 8px rgba(191,164,106,.35); }
+    .walk-counter-nav { display: flex; gap: .28rem; }
+    .mini-terms .terms-grid { display: grid; gap: .7rem; }
+    .term-card {
+      background: #ded3bf;
+      padding: .9rem;
+      border: 1px solid rgba(138,111,62,.35);
+      border-radius: 12px;
+    }
+
+    .term-card h3 { color: var(--old-bronze); margin-top: 0; }
+
+    .daily-step-card {
+      padding: 1rem;
+      border: 1px solid rgba(191,164,106,.72);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(232, 221, 199, 0.96), rgba(216, 208, 191, 0.92));
+      color: var(--text-dark);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.32), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+    }
+
+    .daily-step-text {
+      margin: .2rem 0 1rem;
+      color: var(--text-dark);
+      opacity: 1;
+      font-size: 1.04rem;
+      line-height: 1.9;
+      font-weight: 500;
+    }
+
+    .daily-step-text::before {
+      content: "“";
+      color: var(--old-bronze);
+      font-size: 1.8rem;
+      line-height: 1;
+      margin-right: .1em;
+      vertical-align: -.2em;
+    }
+
+    .daily-step-text::after {
+      content: "”";
+      color: var(--old-bronze);
+      font-size: 1.8rem;
+      line-height: 1;
+      margin-left: .1em;
+      vertical-align: -.2em;
+    }
+
+    .daily-step-text.is-swapping { animation: quoteFade .45s ease; }
+    .daily-step-button { width: 100%; margin-top: 1rem; }
+
+    @keyframes quoteFade {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: none; }
+    }
+
+
+    .name-example {
+      margin-top: 1rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .name-example-item {
+      margin: 0;
+      padding: .8rem .9rem;
+      border-radius: 12px;
+      border: 1px solid rgba(138, 111, 62, .28);
+      background: rgba(18, 23, 25, .08);
+      color: var(--text-dark);
+    }
+
+    .name-example-item strong {
+      display: block;
+      color: var(--text-dark);
+      font-weight: 700;
+    }
+
+    .name-example-item small {
+      display: block;
+      margin-top: .2rem;
+      color: #5f5647;
+      font-weight: 500;
+      line-height: 1.65;
+    }
+
+
+    .pilgrim-pager {
+      position: fixed;
+      left: 50%;
+      bottom: calc(.75rem + env(safe-area-inset-bottom));
+      z-index: 1001;
+      width: min(100% - 1rem, 520px);
+      transform: translateX(-50%);
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: .55rem;
+      padding: .52rem .62rem;
+      border: 1px solid rgba(191,164,106,.42);
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, rgba(18,23,25,.88), rgba(18,23,25,.76));
+      box-shadow: 0 14px 36px rgba(0,0,0,.36), inset 0 0 0 1px rgba(255,255,255,.05);
+      backdrop-filter: blur(8px);
+      color: var(--text-main);
+    }
+
+    body.js-enabled.content-entered .pilgrim-pager {
+      display: flex;
+    }
+
+    .pilgrim-pager__button {
+      min-width: 5.7rem;
+      min-height: 40px;
+      border: 1px solid rgba(191,164,106,.38);
+      border-radius: 999px;
+      background: rgba(232,221,199,.08);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: .82rem;
+      cursor: pointer;
+    }
+
+    .pilgrim-pager__button:active {
+      transform: translateY(1px);
+    }
+
+    .pilgrim-pager__button:disabled {
+      opacity: .42;
+      cursor: default;
+    }
+
+    .pilgrim-pager__center {
+      min-width: 0;
+      flex: 1;
+      text-align: center;
+      line-height: 1.35;
+    }
+
+    .pilgrim-pager__label {
+      display: block;
+      color: var(--sacred-gold);
+      font-size: .72rem;
+      letter-spacing: .1em;
+      white-space: nowrap;
+    }
+
+    .pilgrim-pager__title {
+      display: block;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: .84rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pilgrim-pager__dots {
+      display: flex;
+      justify-content: center;
+      gap: .24rem;
+      margin-top: .28rem;
+    }
+
+    .pilgrim-pager__dots .stone-dot {
+      width: 6px;
+      height: 9px;
+    }
+
+    @media (min-width: 760px) {
+      .two-col { grid-template-columns: 1fr 1fr; }
+      .doctrine-grid { grid-template-columns: repeat(3, 1fr); }
+      .taboo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .main-flow::before { left: 30px; }
+    }
+
+    @media (min-width: 820px) {
+      .symbol-layout {
+        grid-template-columns: minmax(280px, 340px) 1fr;
+        gap: 2.6rem;
+      }
+
+      .symbol-image-wrap { margin: 0; }
+    }
+
+    @media (max-width: 699px) {
+      .main-flow::before { display: none; }
+      .section { padding: 1.7rem 0; }
+      .intro { max-width: 34ch; }
+      .walk-section::before { top: 1.1rem; right: .2rem; left: auto; }
+      .walk-counter { left: 50%; right: auto; transform: translateX(-50%); }
+      .stone-nav { bottom: 4.6rem; right: .2rem; }
+      .stone-dot { width: 7px; height: 11px; }
+      .timeline li { padding: .7rem .75rem .8rem 1.8rem; }
+    }
+
+    @media (max-width: 420px) {
+      .container { width: min(100% - 1rem, 920px); }
+      body { font-size: 16px; line-height: 1.8; }
+      .card { padding: 1rem; }
+    }
+
+
+    /* =========================================================
+       Aruku-kyo Design Guideline
+       テキストは変更せず、色の役割と可読性だけを整理する。
+       暗色 = 神聖な空間
+       古紙色 = 長文を読む場所
+       金色 = 短い神聖な印
+       苔色・古銅色 = 歩みと操作
+       ========================================================= */
+
+    body {
+      background:
+        radial-gradient(80% 60% at 50% 12%, rgba(191, 164, 106, .08), transparent 68%),
+        linear-gradient(180deg, var(--bg-deep), var(--bg-night));
+      color: var(--text-main);
+    }
+
+    .main-flow {
+      padding-top: 2.8rem;
+      padding-bottom: 8.8rem;
+    }
+
+    .walk-section {
+      margin-block: 1.2rem;
+    }
+
+    .walk-section + .walk-section {
+      margin-top: 1.75rem;
+    }
+
+    .section {
+      padding-top: 2.65rem;
+      padding-bottom: 2.65rem;
+    }
+
+    .section h2 {
+      color: var(--text-main);
+      margin-bottom: 1.05rem;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, .18);
+    }
+
+    .section-kicker {
+      color: var(--sacred-gold);
+      margin-bottom: .45rem;
+      font-weight: 700;
+    }
+
+    .section-lead {
+      color: #eadbb9;
+      margin-bottom: 1.25rem;
+      font-weight: 700;
+    }
+
+    .card,
+    .symbol-copy.card {
+      background:
+        radial-gradient(circle at 96% 0%, var(--ui-gold-soft), transparent 30%),
+        linear-gradient(180deg, var(--ui-paper), var(--ui-paper-deep));
+      color: var(--text-dark);
+      border-color: var(--ui-gold-line);
+      box-shadow:
+        0 14px 34px rgba(0, 0, 0, .28),
+        inset 0 0 0 1px rgba(255, 255, 255, .18);
+      padding: 1.28rem;
+    }
+
+    .card h2,
+    .card h3,
+    .card p,
+    .card li,
+    .card strong,
+    .card summary,
+    .card small,
+    .symbol-copy h2,
+    .symbol-copy h3,
+    .symbol-copy p {
+      color: var(--text-dark);
+      text-shadow: none;
+    }
+
+    .card .section-lead,
+    .symbol-copy .section-lead,
+    .daily-step .section-lead,
+    .mini-terms .section-lead {
+      color: var(--old-bronze);
+      opacity: 1;
+    }
+
+    .section:not(.card):not(.scripture) > p:not(.section-kicker):not(.section-lead),
+    .section:not(.card):not(.scripture) > .two-col + p,
+    .section:not(.card):not(.scripture) > .emphasis {
+      color: var(--text-main);
+    }
+
+    .two-col,
+    .doctrine-grid,
+    .taboo-grid,
+    .terms-grid {
+      gap: 1.15rem;
+    }
+
+    .soft-positive {
+      background:
+        radial-gradient(circle at 90% 10%, var(--ui-gold-soft), transparent 38%),
+        linear-gradient(180deg, var(--ui-paper-green), #c8d5bd);
+    }
+
+    .soft-caution,
+    .ethical {
+      background:
+        radial-gradient(circle at 88% 10%, rgba(107, 78, 61, .10), transparent 38%),
+        linear-gradient(180deg, var(--ui-paper-caution), #d9c3aa);
+    }
+
+    .emphasis {
+      background:
+        linear-gradient(180deg, rgba(232, 221, 199, .96), rgba(215, 198, 172, .96));
+      color: var(--text-dark);
+      border: 1px solid var(--ui-gold-line);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14);
+    }
+
+    .term-card,
+    .taboo,
+    .timeline li,
+    .faq details {
+      background:
+        linear-gradient(180deg, rgba(232, 221, 199, .92), rgba(215, 198, 172, .92));
+      color: var(--text-dark);
+      border-color: var(--ui-gold-line);
+    }
+
+    .term-card h3,
+    .timeline strong,
+    .taboo h3 {
+      color: var(--old-bronze);
+    }
+
+    .timeline li {
+      margin-bottom: .75rem;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .1);
+    }
+
+    .faq summary,
+    .faq details p {
+      color: var(--text-dark);
+    }
+
+    body.js-enabled .faq details[open] p {
+      max-height: 480px;
+    }
+
+    .scripture {
+      background:
+        radial-gradient(circle at 50% 0%, var(--ui-gold-soft), transparent 34%),
+        linear-gradient(180deg, var(--bg-night), var(--bg-deep));
+      color: var(--text-main);
+      border-color: var(--ui-gold-line-strong);
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, .28),
+        inset 0 0 0 1px rgba(216, 208, 191, .14);
+    }
+
+    .scripture h2,
+    .scripture p,
+    .scripture .section-lead {
+      color: var(--text-main);
+    }
+
+    .scripture h2,
+    .scripture .section-kicker {
+      color: var(--sacred-gold);
+    }
+
+    .daily-step-card {
+      background:
+        radial-gradient(circle at 90% 8%, var(--ui-gold-soft), transparent 30%),
+        linear-gradient(180deg, var(--ui-paper), rgba(216, 208, 191, .94));
+      color: var(--text-dark);
+      border-color: var(--ui-gold-line-strong);
+      box-shadow:
+        0 16px 34px var(--ui-shadow),
+        inset 0 0 0 1px rgba(255, 255, 255, .18);
+    }
+
+    .daily-step-text,
+    .daily-step-card p {
+      color: var(--text-dark);
+    }
+
+    .button,
+    .pilgrim-pager__button {
+      color: var(--text-main);
+      border-color: var(--ui-gold-line);
+      background:
+        linear-gradient(180deg, rgba(138, 111, 62, .96), rgba(93, 74, 41, .96));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .07),
+        0 8px 20px rgba(0, 0, 0, .2);
+    }
+
+    .button:focus-visible,
+    .pilgrim-pager__button:focus-visible,
+    summary:focus-visible {
+      outline: 2px solid var(--sacred-gold);
+      outline-offset: 3px;
+    }
+
+    .pilgrim-pager,
+    .walk-counter {
+      color: var(--text-main);
+      border-color: var(--ui-gold-line);
+      background:
+        linear-gradient(180deg, var(--ui-glass-strong), rgba(18, 23, 25, .78));
+      box-shadow:
+        0 14px 36px rgba(0, 0, 0, .36),
+        inset 0 0 0 1px rgba(255, 255, 255, .05);
+    }
+
+    .pilgrim-pager__label,
+    .walk-counter strong {
+      color: var(--sacred-gold);
+    }
+
+    .pilgrim-pager__title {
+      color: var(--text-main);
+    }
+
+    .stone-dot {
+      border-color: var(--ui-gold-line);
+      background: rgba(216, 208, 191, .32);
+    }
+
+    .stone-dot.is-active {
+      background: rgba(191, 164, 106, .84);
+      box-shadow: 0 0 10px rgba(191, 164, 106, .28);
+    }
+
+    .lambda-mark {
+      border-color: var(--ui-gold-line);
+      background:
+        radial-gradient(circle, var(--ui-gold-mid), transparent 66%),
+        linear-gradient(180deg, rgba(232, 221, 199, .72), rgba(191, 164, 106, .16));
+      color: var(--old-bronze);
+    }
+
+    .name-example-item {
+      border-color: rgba(138, 111, 62, .3);
+      background: rgba(18, 23, 25, .08);
+    }
+
+    .name-example-item strong {
+      color: var(--text-dark);
+    }
+
+    .name-example-item small {
+      color: var(--ui-readable-muted);
+    }
+
+    .symbol-section::before {
+      opacity: .035;
+    }
+
+    .symbol-image-wrap {
+      box-shadow:
+        0 24px 60px rgba(0,0,0,.44),
+        0 0 46px rgba(191,164,106,.18);
+    }
+
+    .ambient-footprint::before,
+    .ambient-footprint::after {
+      background: rgba(191, 164, 106, .2);
+      box-shadow: 0 0 8px rgba(191, 164, 106, .14);
+    }
+
+    @keyframes ambientFootprintFade {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(var(--rotate, 0deg)) scale(.96);
+      }
+      12% {
+        opacity: .11;
+      }
+      58% {
+        opacity: .075;
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(var(--rotate, 0deg)) scale(1.02);
+      }
+    }
+
+    @media (max-width: 699px) {
+      .main-flow {
+        padding-top: 2.35rem;
+        padding-bottom: 9rem;
+      }
+
+      .walk-section {
+        margin-block: 1.35rem;
+      }
+
+      .walk-section + .walk-section {
+        margin-top: 1.85rem;
+      }
+
+      .section {
+        padding-top: 2.15rem;
+        padding-bottom: 2.15rem;
+      }
+
+      .card,
+      .symbol-copy.card {
+        padding: 1.14rem;
+      }
+
+      .pilgrim-pager {
+        width: min(100% - .8rem, 520px);
+      }
+
+      .pilgrim-pager__button {
+        min-width: 5.25rem;
+      }
+    }
+
+
+    /* =========================================================
+       Block consistency update
+       教団シンボル以降は、各コンテンツを明確なブロックとして区分けする。
+       余白は前版より抑え、背景と文字の同化を避ける。
+       ========================================================= */
+
+    .main-flow {
+      padding-top: 1.8rem;
+      padding-bottom: 7.2rem;
+    }
+
+    .walk-section {
+      margin-block: .62rem;
+    }
+
+    .walk-section + .walk-section {
+      margin-top: .88rem;
+    }
+
+    .section {
+      padding-top: 1.62rem;
+      padding-bottom: 1.62rem;
+    }
+
+    .main-flow > .walk-section:not(.symbol-section) {
+      border: 1px solid var(--ui-gold-line);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 96% 0%, var(--ui-gold-soft), transparent 30%),
+        linear-gradient(180deg, var(--ui-paper), var(--ui-paper-deep));
+      box-shadow:
+        0 14px 34px rgba(0, 0, 0, .26),
+        inset 0 0 0 1px rgba(255, 255, 255, .16);
+      padding: 1.35rem;
+      color: var(--text-dark);
+    }
+
+    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing) h2,
+    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing) h3,
+    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing) p,
+    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing) li,
+    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing) strong,
+    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing) summary,
+    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing) small {
+      color: var(--text-dark);
+      text-shadow: none;
+    }
+
+    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing) .section-kicker {
+      color: var(--old-bronze);
+    }
+
+    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing) .section-lead {
+      color: var(--old-bronze);
+      opacity: 1;
+    }
+
+    .main-flow > .walk-section.scripture {
+      background:
+        radial-gradient(circle at 50% 0%, var(--ui-gold-soft), transparent 34%),
+        linear-gradient(180deg, var(--bg-night), var(--bg-deep));
+      color: var(--text-main);
+      border-color: var(--ui-gold-line-strong);
+    }
+
+    .main-flow > .walk-section.scripture h2,
+    .main-flow > .walk-section.scripture p,
+    .main-flow > .walk-section.scripture .section-lead {
+      color: var(--text-main);
+    }
+
+    .main-flow > .walk-section.scripture .section-kicker,
+    .main-flow > .walk-section.scripture h2 {
+      color: var(--sacred-gold);
+    }
+
+    .main-flow > .walk-section.closing {
+      background:
+        radial-gradient(circle at 50% 0%, var(--ui-gold-soft), transparent 32%),
+        linear-gradient(180deg, rgba(27, 34, 38, .96), rgba(18, 23, 25, .96));
+      color: var(--text-main);
+      border-color: var(--ui-gold-line);
+    }
+
+    .main-flow > .walk-section.closing h2,
+    .main-flow > .walk-section.closing p {
+      color: var(--text-main);
+    }
+
+    .main-flow > .walk-section.closing .section-kicker {
+      color: var(--sacred-gold);
+    }
+
+    .card {
+      box-shadow: none;
+    }
+
+    .main-flow > .walk-section .card {
+      border-color: rgba(138, 111, 62, .34);
+      background:
+        linear-gradient(180deg, rgba(232, 221, 199, .94), rgba(215, 198, 172, .9));
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
+    }
+
+    .emphasis {
+      background:
+        radial-gradient(circle at 92% 0%, rgba(191, 164, 106, .18), transparent 30%),
+        linear-gradient(180deg, #efe3c8, #d9c5a8);
+      color: var(--text-dark) !important;
+      border: 1px solid var(--ui-gold-line-strong);
+      border-left: 5px solid var(--old-bronze);
+      box-shadow:
+        0 10px 22px rgba(0, 0, 0, .18),
+        inset 0 0 0 1px rgba(255, 255, 255, .2);
+      padding: .95rem 1rem;
+      line-height: 1.9;
+    }
+
+    .two-col,
+    .doctrine-grid,
+    .taboo-grid,
+    .terms-grid {
+      gap: .92rem;
+    }
+
+    .symbol-section {
+      margin-bottom: .9rem;
+    }
+
+    .symbol-copy.card {
+      box-shadow:
+        0 14px 34px rgba(0, 0, 0, .26),
+        inset 0 0 0 1px rgba(255, 255, 255, .16);
+    }
+
+    .pilgrim-pager {
+      box-shadow:
+        0 10px 26px rgba(0, 0, 0, .34),
+        inset 0 0 0 1px rgba(255, 255, 255, .05);
+    }
+
+    @media (max-width: 699px) {
+      .main-flow {
+        padding-top: 1.55rem;
+        padding-bottom: 7.6rem;
+      }
+
+      .walk-section {
+        margin-block: .72rem;
+      }
+
+      .walk-section + .walk-section {
+        margin-top: 1rem;
+      }
+
+      .section {
+        padding-top: 1.35rem;
+        padding-bottom: 1.35rem;
+      }
+
+      .main-flow > .walk-section:not(.symbol-section) {
+        padding: 1.05rem;
+        border-radius: 18px;
+      }
+
+      .emphasis {
+        padding: .85rem .9rem;
+      }
+    }
+
+
+    /* Finger trail
+       指でタップ・スワイプしている間だけ、タップ位置の少し左に👣を表示する */
+    .touch-footprint {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 1150;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-150%, -48%) rotate(-12deg) scale(.96);
+      transition: opacity .12s ease, transform .12s ease;
+      font-size: 1.55rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 8px rgba(191, 164, 106, .28));
+      will-change: transform, opacity, left, top;
+    }
+
+    body.is-finger-walking .touch-footprint {
+      opacity: .9;
+      transform: translate(-150%, -48%) rotate(-12deg) scale(1);
+    }
+
+    @media (max-width: 420px) {
+      .touch-footprint {
+        font-size: 1.42rem;
+        transform: translate(-145%, -48%) rotate(-12deg) scale(.96);
+      }
+
+      body.is-finger-walking .touch-footprint {
+        transform: translate(-145%, -48%) rotate(-12deg) scale(1);
+      }
+    }
+
+
+    /* Symbol restore
+       教団シンボルは、画像が読めない場合でも表示箇所を保つ。
+       画像は直下配置・assets配置の両方を想定する。 */
+    .symbol-section {
+      border: 1px solid var(--ui-gold-line, rgba(191, 164, 106, .46));
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(191, 164, 106, .14), transparent 36%),
+        linear-gradient(180deg, rgba(18, 23, 25, .94), rgba(27, 34, 38, .94));
+      box-shadow:
+        0 16px 38px rgba(0, 0, 0, .28),
+        inset 0 0 0 1px rgba(255, 255, 255, .05);
+      padding: 1.25rem;
+    }
+
+    .symbol-section::before {
+      background-image:
+        url("IMG_7363.JPG"),
+        url("assets/IMG_7363.JPG"),
+        url("assets/IMG_7363.jpeg");
+      background-size: cover;
+      background-position: center;
+      opacity: .045;
+    }
+
+    .symbol-layout {
+      width: 100%;
+    }
+
+    .symbol-frame {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .symbol-image {
+      position: relative;
+      z-index: 2;
+      opacity: 1;
+    }
+
+    .symbol-image.is-missing {
+      display: none;
+    }
+
+    .symbol-fallback {
+      position: absolute;
+      inset: .45rem;
+      z-index: 1;
+      display: none;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid rgba(191, 164, 106, .38);
+      background:
+        radial-gradient(circle at 50% 34%, rgba(191, 164, 106, .22), transparent 54%),
+        linear-gradient(180deg, rgba(18, 23, 25, .78), rgba(42, 45, 42, .72));
+      color: var(--text-main);
+      text-align: center;
+    }
+
+    .symbol-frame.has-fallback .symbol-fallback {
+      display: grid;
+    }
+
+    .symbol-fallback-mark {
+      display: block;
+      font-size: clamp(3.5rem, 18vw, 6.8rem);
+      filter: drop-shadow(0 0 12px rgba(191, 164, 106, .28));
+      line-height: 1;
+    }
+
+    .symbol-fallback-text {
+      display: block;
+      margin-top: .35rem;
+      color: var(--sacred-gold);
+      font-size: .9rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .symbol-copy.card {
+      background:
+        radial-gradient(circle at 96% 0%, rgba(191, 164, 106, .16), transparent 30%),
+        linear-gradient(180deg, rgba(232, 221, 199, .98), #d7c6ac);
+      color: var(--text-dark);
+      border-color: var(--ui-gold-line, rgba(191, 164, 106, .46));
+    }
+
+    .symbol-copy.card h2,
+    .symbol-copy.card p {
+      color: var(--text-dark);
+    }
+
+    .symbol-copy.card .section-kicker,
+    .symbol-copy.card .section-lead {
+      color: var(--old-bronze);
+    }
+
+    @media (max-width: 699px) {
+      .symbol-section {
+        padding: 1rem;
+        border-radius: 18px;
+      }
+
+      .symbol-frame {
+        min-height: 190px;
+      }
+    }
+
+
+    /* Remove block corner icons
+       各コンテンツブロック右上の小さなアイコン装飾は不要のため非表示にする。
+       教団シンボル背景の薄い画像装飾は維持する。 */
+    .main-flow > .walk-section:not(.symbol-section)::before,
+    .doctrine::before,
+    .d1::before,
+    .d2::before,
+    .d3::before {
+      display: none !important;
+      content: none !important;
+    }
+
+
+    /* Lambda copy button
+       信者の証 λ をコピーするためのボタンと、2秒で消える案内ポップ */
+    .lambda-copy-button {
+      width: 100%;
+      margin-top: 1.1rem;
+      font-size: 1.08rem;
+      letter-spacing: .04em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .28em;
+      flex-wrap: wrap;
+    }
+
+    .lambda-copy-symbol {
+      font-size: calc(1.08rem + 2pt);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .lambda-copy-label {
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .lambda-toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(5.6rem + env(safe-area-inset-bottom));
+      z-index: 1200;
+      width: min(100% - 1.5rem, 360px);
+      transform: translate(-50%, 10px);
+      opacity: 0;
+      pointer-events: none;
+      padding: .85rem 1rem;
+      border: 1px solid var(--ui-gold-line-strong, rgba(191, 164, 106, .72));
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 92% 0%, rgba(191, 164, 106, .18), transparent 34%),
+        linear-gradient(180deg, rgba(232, 221, 199, .98), #d7c6ac);
+      color: var(--text-dark);
+      box-shadow:
+        0 16px 34px rgba(0, 0, 0, .34),
+        inset 0 0 0 1px rgba(255, 255, 255, .18);
+      text-align: center;
+      line-height: 1.75;
+      font-weight: 700;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .lambda-toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .ambient-footsteps { display: none; }
+      .section,
+      body.js-enabled .walk-section,
+      .section-lead,
+      .scripture-lines p,
+      body.js-enabled .symbol-image-wrap {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">本文へ移動</a>
+  <div class="ambient-footsteps" aria-hidden="true"></div>
+
+  <header class="gateway" aria-labelledby="gateway-title">
+    <div class="mist" aria-hidden="true"></div>
+    <div class="path" aria-hidden="true"></div>
+    <div class="presence" aria-hidden="true"></div>
+    <div class="gateway__inner container">
+      <p class="eyebrow">創作上の架空設定</p>
+      <h1 id="gateway-title">アルク教</h1>
+      <p class="catch">歩くことは、祈りである。</p>
+      <p class="intro">
+        最初の一歩は、道を開く。<br />
+        歩ける日は歩き、歩けない日は休む。<br />
+        そのどちらも、アルク神は静かに見守っている。
+      </p>
+      <button id="stepButton" class="button" type="button" aria-label="一歩を踏み出して本文へ進む">
+        一歩を踏み出す
+      </button>
+      <p class="note">これは創作上の架空設定です。</p>
+    </div>
+    <div class="step-trail" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="path-glow" aria-hidden="true"></div>
+  </header>
+
+  <main id="main" class="container main-flow">
+    <nav class="stone-nav" aria-label="章のしるべ"></nav>
+
+    <section class="section walk-section symbol-section" id="symbol" data-step-index="1" data-tone="symbol">
+      <div class="container symbol-layout">
+        <div class="symbol-image-wrap symbol-frame">
+          <img
+            src="IMG_7360.jpeg"
+            data-symbol-srcs="IMG_7360.jpeg|assets/IMG_7360.jpeg"
+            alt="アルク教の教団シンボル。青い円の中に、金色の歩く足が描かれている。"
+            class="symbol-image"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="symbol-fallback" aria-hidden="true">
+            <span class="symbol-fallback-mark">👣</span>
+            <span class="symbol-fallback-text">アルク教の印</span>
+          </div>
+        </div>
+        <div class="symbol-copy card">
+          <p class="section-kicker">教団の印</p>
+          <h2>教団のシンボル</h2>
+          <p class="section-lead">歩みをかたどる金の印。</p>
+          <p>この丸い印は、アルク教における教団のシンボルです。中央の金色の足は、歩くことそのものが祈りであることを表しています。</p>
+          <p>前へ進む足は、今日の一歩を示します。後ろで支える足は、休む日や立ち止まる時間もまた、歩みの一部であることを示します。</p>
+          <p>円は、誰かと比べるための輪ではありません。それぞれの人が、自分の歩幅で道をめぐることを表しています。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card walk-section believer-section" id="believer-mark" data-step-index="2" data-tone="believer">
+      <p class="section-kicker">信者の証</p>
+      <h2>アルク教信者の証｜λ</h2>
+      <p class="section-lead">名の中に、静かな歩みを宿す印。</p>
+      <span class="lambda-mark" aria-hidden="true">λ</span>
+      <p>古きアルク教信者は、名前を「アルク・名・前」という形式にして、自分が信者であることを示していました。</p>
+      <p>しかし時代が変わり、今は名前そのものを大きく変えるよりも、名前やプロフィールの中に小さな証を置く形が広まりました。</p>
+      <p>その証が「λ」です。声高に名乗るための印ではなく、自分の歩みを忘れないための、静かな目印として使われます。</p>
+      <p>λは、前へ出る足と、それを支える足の形に似ているとされます。だから現代の信者は、この小さな印を歩みの証として名前やプロフィールに置きます。</p>
+      <div class="name-example" aria-label="アルク教信者の証の例">
+        <p class="name-example-item">
+          <strong>古き表し方：アルク・名・前</strong>
+          <small>名前の形式そのもので信者であることを示す。</small>
+        </p>
+
+        <p class="name-example-item">
+          <strong>現在の表し方：名前やプロフィールに λ を入れる</strong>
+          <small>生活の中に小さく証を置き、自分の歩みを示す。</small>
+        </p>
+      </div>
+
+      <button class="button lambda-copy-button" type="button" aria-label="λのテキストをコピーする">
+        <span class="lambda-copy-label">アルク神より</span>
+        <span class="lambda-copy-symbol">λ</span>
+        <span class="lambda-copy-label">を賜る</span>
+      </button>
+    </section>
+
+    <section id="about" class="section card walk-section" data-step-index="3" data-tone="first-step">
+      <p class="section-kicker">第一点灯</p>
+      <h2>第一歩｜アルク教とは</h2>
+      <p class="section-lead">ここから、道は始まる。</p>
+      <p>アルク教は、歩くことを特別な祈りとして扱います。ただし、歩くことを人に強いる宗教ではありません。歩ける日は、自分のペースで歩く。歩けない日は、無理をせず休む。そのどちらも、アルク神の前では大切な行いです。</p>
+      <p>アルク教にとって、道はどこか遠くにあるものではありません。家の廊下、駅までの道、仕事帰りの歩道、病院の中の短い移動。そのどれもが、今日の自分の体で進む小さな道です。</p>
+      <p>アルク教では、たくさん歩いた日だけを良い日とは考えません。少しだけ歩けた日も、歩けなかった日も、自分を傷つけずに過ごしたなら、それは大切な一日です。</p>
+      <p>この教えが見つめているのは、歩数の多さではありません。自分の体と心に合った歩みを選べたかどうかです。</p>
+    </section>
+
+    <section class="section walk-section" data-step-index="4" data-tone="aruku-god">
+      <p class="section-kicker">見守りの場</p>
+      <h2>見守る神｜アルク神</h2>
+      <p class="section-lead">アルク神は、足元を静かに観ている。</p>
+      <p>アルク神は、歩ける日も歩けない日も静かに見守る神です。</p>
+      <p>アルク神は、命令する神ではありません。人の足元を静かに観ている神です。</p>
+      <p>アルク神は、速く歩く人だけを喜ぶのではありません。ゆっくり歩く人、途中で立ち止まる人、今日は休むと決めた人も見守ります。</p>
+      <p>ただし、アルク神が悲しむことがあります。それは、誰かが他人の歩みを奪うことです。</p>
+      <p>「もっと歩け」と迫ること。「それしか歩いていないのか」と比べること。歩けない人を責めること。アルク神は、そのような行いを静かに悲しみます。</p>
+      <div class="two-col">
+        <article class="card soft-positive">
+          <h3>喜ぶこと</h3>
+          <ul>
+            <li>人が自分のペースで歩くこと</li>
+            <li>今日は休もうと決めること</li>
+            <li>疲れた人を待つこと</li>
+            <li>歩けない人を責めないこと</li>
+            <li>自分の体を大切にすること</li>
+          </ul>
+        </article>
+        <article class="card soft-caution">
+          <h3>悲しむこと</h3>
+          <ul>
+            <li>他人に歩くことを強要すること</li>
+            <li>歩数で人を評価すること</li>
+            <li>歩けない日を悪いこととして扱うこと</li>
+            <li>健康を壊すほど歩くこと</li>
+            <li>歩くことを、他人を見下す理由にすること</li>
+          </ul>
+        </article>
+      </div>
+      <p class="emphasis">アルク神は、歩けない人を責めない。けれど、他人の歩みを奪うことを悲しむ。</p>
+    </section>
+
+    <section class="section walk-section" data-step-index="5" data-tone="guideposts">
+      <p class="section-kicker">三つの道しるべ</p>
+      <h2>三つの道しるべ</h2>
+      <p class="section-lead">歩くこと、休むこと、比べないこと。</p>
+      <div class="doctrine-grid">
+        <article class="card doctrine d1">
+          <h3>教義1：歩くことは祈りである</h3>
+          <p>アルク教では、祈りを口に出す必要はありません。歩くことそのものが祈りです。</p>
+          <p>通勤でも、散歩でも、買い物でも、家の中を少し移動することでも構いません。自分の体を使って今日を進むこと。その行いが、アルク神への静かな祈りになります。</p>
+        </article>
+        <article class="card doctrine d2">
+          <h3>教義2：休むことも祈りを守る行いである</h3>
+          <p>歩けない日は、信仰から離れた日ではありません。体調が悪い日、心が重い日、足が痛い日、忙しすぎる日。そういう日は、無理をせず休むことが大切です。</p>
+          <p>アルク神は、休む人を責めません。休息は、次の歩みを守るための行いです。</p>
+        </article>
+        <article class="card doctrine d3">
+          <h3>教義3：歩数は記録であり、価値ではない</h3>
+          <p>歩数は、祈りの一つの目安です。しかし、それは人を比べる数字ではありません。</p>
+          <p>多く歩いた人が偉いのではありません。自分に合った歩みを選んだ人が、よく祈っていると考えます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section card walk-section" data-step-index="6" data-tone="record">
+      <p class="section-kicker">見歩の場</p>
+      <h2>歩数は、祈りの記録</h2>
+      <p class="section-lead">数字は、裁くためではなく、知るためにある。</p>
+      <p>アルク教では、歩数を「祈りの記録」として扱います。けれど、それは成績表ではありません。</p>
+      <p>昨日より少し歩けた日は、その歩みを受け止めます。歩けなかった日は、休めたことを受け止めます。</p>
+      <div class="meter-wrap" aria-hidden="true">
+        <div class="meter">
+          <span>比べないための数字</span>
+          <b>記録する</b>
+          <b>責めない</b>
+          <b>競わない</b>
+        </div>
+      </div>
+      <p>歩数は、自分を責めるための数字ではありません。自分の体を知るための、静かな手がかりです。</p>
+      <p>アルク教では、歩数を「祈歩」と呼ぶことがあります。これは人を比べるための数字ではなく、その日の歩みを静かに見つめるための記録です。</p>
+      <p>理想の歩数は、人によって違います。年齢、体調、生活、仕事、心の状態によって変わります。だから、アルク教は一律の歩数目標を掲げません。</p>
+    </section>
+
+    <section class="section card mini-terms walk-section" data-step-index="7" data-tone="terms">
+      <p class="section-kicker">小さな言葉｜アルク教の用語</p>
+      <h2>小さな言葉｜アルク教の用語</h2>
+      <p class="section-lead">歩みを見つめるための、三つの短い言葉。</p>
+      <div class="terms-grid">
+        <article class="term-card">
+          <h3>祈歩</h3>
+          <p>歩数を、祈りの記録として見る言葉。人を比べるためではなく、その日の歩みを静かに見つめるために使う。</p>
+        </article>
+        <article class="term-card">
+          <h3>適歩</h3>
+          <p>その人に合った歩き方。年齢、体調、生活、心の状態に合わせて、自分を傷つけない歩みを選ぶこと。</p>
+        </article>
+        <article class="term-card">
+          <h3>見歩</h3>
+          <p>一日の終わりに、自分の歩みを見つめる時間。反省ではなく、今日の体と心を受け止める時間。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section card walk-section" data-step-index="8" data-tone="daily">
+      <p class="section-kicker">日々の歩み</p>
+      <h2>日々の歩み</h2>
+      <p class="section-lead">生活の中に、祈りはある。</p>
+      <ul class="timeline">
+        <li><strong>朝</strong><span>最初の一歩を少し丁寧に踏み出す。外へ出る日も、部屋の中を歩く日も、その一歩が今日の始まりになる。</span></li>
+        <li><strong>昼</strong><span>体調がよければ、少し遠回りして歩く。ただし、疲れている日は近い道を選んでよい。</span></li>
+        <li><strong>夜</strong><span>歩数を見て、今日の歩みを受け止める。多くても少なくても、点数をつけない。</span></li>
+        <li><strong>休む日</strong><span>無理をせず、体を守る。休むことは、歩みをやめることではなく、歩みを長く続けるための行いである。</span></li>
+      </ul>
+      <p>年齢や体調、生活に合った歩き方を、アルク教では「適歩」と呼びます。多すぎず、少なすぎず、自分を傷つけない歩みを大切にします。</p>
+      <p>一日の終わりに歩数を見る時間を「見歩」と呼びます。反省ではなく、今日の体と心を受け止める時間です。</p>
+    </section>
+
+    <section class="section card ethical walk-section" data-step-index="9" data-tone="taboo">
+      <p class="section-kicker">祈りを壊すもの</p>
+      <h2>祈りを壊すもの</h2>
+      <p class="section-lead">歩みを奪う言葉は、祈りを壊す。</p>
+      <p class="center-text">歩くことは善い。<br />けれど、それを他人に押しつけた瞬間、祈りは壊れる。</p>
+      <div class="taboo-grid">
+        <article class="card taboo">
+          <h3>強要しない</h3>
+          <p>歩くことを人に押しつけない。誘うことはできても、相手の事情を無視して歩かせてはならない。</p>
+        </article>
+        <article class="card taboo">
+          <h3>比べない</h3>
+          <p>歩数で人を比べない。数字は自分を知るためにあり、人を裁くためにはない。</p>
+        </article>
+        <article class="card taboo">
+          <h3>責めない</h3>
+          <p>歩けない人を責めない。休む日には、その人に必要な理由がある。</p>
+        </article>
+        <article class="card taboo">
+          <h3>無理をしない</h3>
+          <p>健康を壊すほど歩かない。体を傷つける歩みは、祈りではない。</p>
+        </article>
+        <article class="card taboo">
+          <h3>見下さない</h3>
+          <p>歩いている自分を理由に、他人を下に見ない。祈りは、誇るためのものではない。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section scripture walk-section" aria-label="歩みの書" data-step-index="10" data-tone="scripture">
+      <p class="section-kicker">歩みの書</p>
+      <h2>歩みの書</h2>
+      <p class="section-lead">声に出さない祈りの記録。</p>
+      <p>アルク教には、声に出して唱える祈りはありません。けれど、歩みを見つめるための言葉があります。それは命令ではなく、道の途中で思い出すための短い記録です。</p>
+      <div class="scripture-lines">
+        <p>アルク神は、歩数を数えない。<br />歩みを観ている。</p>
+        <p>遠くまで歩いた者も、今日は休んだ者も、<br />自分を傷つけなかったなら、神の前にいる。</p>
+        <p>だが、人に歩けと迫る者、<br />歩けぬ者を笑う者、<br />歩数で人を裁く者を、<br />アルク神は静かに悲しむ。</p>
+      </div>
+    </section>
+
+    <section class="section card daily-step walk-section" data-step-index="11" data-tone="daily-step">
+      <p class="section-kicker">今日の一歩</p>
+      <h2>今日の一歩</h2>
+      <p class="section-lead">道の途中で、ひとつ言葉を受け取る。</p>
+      <p>
+        アルク教の言葉は、命令ではありません。
+        今日の歩みを少しだけ見つめるための、短い道しるべです。
+      </p>
+      <div class="daily-step-card">
+        <p class="daily-step-text" aria-live="polite">ここに、アルク教の格言が静かに現れます。</p>
+        <button class="button daily-step-button" type="button">今日の一歩を受け取る</button>
+      </div>
+    </section>
+
+    <section class="section card walk-section" data-step-index="12" data-tone="faq">
+      <p class="section-kicker">問いの場</p>
+      <h2>道の途中で生まれる問い</h2>
+      <p class="section-lead">迷ったときは、問いながら歩けばよい。</p>
+      <div class="faq" role="list">
+        <details>
+          <summary>Q1. アルク教は、毎日たくさん歩く宗教ですか？</summary>
+          <p>いいえ。歩数の多さを競いません。</p>
+        </details>
+        <details>
+          <summary>Q2. 歩けない日は悪い日ですか？</summary>
+          <p>いいえ。休むことも祈りを守る行いです。</p>
+        </details>
+        <details>
+          <summary>Q3. 歩数は必要ですか？</summary>
+          <p>目安にはなりますが、人を比べる数字ではありません。</p>
+        </details>
+        <details>
+          <summary>Q4. 歩くことを人にすすめてもよいですか？</summary>
+          <p>やさしく誘うことはできます。しかし、強要したり、歩かないことを責めたりしてはいけません。</p>
+          <p>アルク教では、相手の歩幅を守ることも大切な祈りです。</p>
+        </details>
+        <details>
+          <summary>Q5. 実在する宗教ですか？</summary>
+          <p>いいえ。アルク教は創作上の架空宗教です。</p>
+          <p>現代を舞台にした物語や世界観のための設定です。</p>
+        </details>
+        <details>
+          <summary>Q6. 入信に手続きは必要ですか？</summary>
+          <p>不要です。人は意識が芽生えた時、一歩を踏み出した時、その自覚なく入信しています。</p>
+          <p>任意ですが、信者であることを示す場合は名前かプロフィールにλを付けてください。</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="section closing walk-section" data-step-index="13" data-tone="closing">
+      <p class="section-kicker">締めの言葉</p>
+      <h2>歩ける日は、歩く。<br />歩けない日は、休む。<br />どちらの日も、あなたはアルク神から離れていない。</h2>
+      <p>歩くことは祈りであり、<br />休むことはその祈りを守ることです。</p>
+    </section>
+  </main>
+
+  <footer class="footer">創作設定：アルク教（これは創作上の架空設定です。）</footer>
+
+  <script>
+    document.body.classList.add('js-enabled');
+
+
+    document.querySelectorAll('.symbol-image[data-symbol-srcs]').forEach(img => {
+      const sources = img.dataset.symbolSrcs.split('|').filter(Boolean);
+      let sourceIndex = Math.max(0, sources.indexOf(img.getAttribute('src')));
+
+      const showFallback = () => {
+        img.classList.add('is-missing');
+        img.closest('.symbol-frame')?.classList.add('has-fallback');
+      };
+
+      img.addEventListener('error', () => {
+        sourceIndex += 1;
+        if (sourceIndex < sources.length) {
+          img.src = sources[sourceIndex];
+        } else {
+          showFallback();
+        }
+      });
+
+      img.addEventListener('load', () => {
+        img.classList.remove('is-missing');
+        img.closest('.symbol-frame')?.classList.remove('has-fallback');
+      });
+    });
+
+
+
+    const stepButton = document.getElementById('stepButton');
+    const firstSection = document.getElementById('symbol');
+    const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const reduceMotion = reduceMotionQuery.matches;
+
+    if (stepButton && firstSection) {
+      stepButton.addEventListener('click', () => {
+        document.body.classList.add('is-stepping');
+        const delay = reduceMotion ? 120 : 860;
+        window.setTimeout(() => {
+          firstSection.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+          document.body.classList.add('content-entered');
+          document.body.classList.remove('is-stepping');
+          document.body.classList.add('arrived-symbol');
+          window.setTimeout(() => document.body.classList.remove('arrived-symbol'), reduceMotion ? 100 : 900);
+        }, delay);
+      });
+    }
+
+    const sections = Array.from(document.querySelectorAll('.walk-section'));
+    const steppedSections = sections.filter(section => Number(section.getAttribute('data-step-index')) > 0);
+    const totalSteps = steppedSections.filter(section => Number(section.getAttribute('data-step-index')) % 1 === 0).length;
+    const counter = document.createElement('p');
+    counter.className = 'walk-counter';
+    counter.setAttribute('aria-live', 'polite');
+    counter.innerHTML = `歩み <strong>1</strong> / ${totalSteps} <span class="walk-counter-nav" aria-hidden="true"></span>`;
+    document.body.appendChild(counter);
+
+    let currentStep = 1;
+    const pager = document.createElement('nav');
+    pager.className = 'pilgrim-pager';
+    pager.setAttribute('aria-label', 'アルク教の歩みページャー');
+    pager.innerHTML = `
+      <button class="pilgrim-pager__button pilgrim-pager__prev" type="button">前の歩み</button>
+      <span class="pilgrim-pager__center">
+        <span class="pilgrim-pager__label">歩み <strong>1</strong> / ${totalSteps}</span>
+        <span class="pilgrim-pager__title">教団のシンボル</span>
+        <span class="pilgrim-pager__dots" aria-hidden="true"></span>
+      </span>
+      <button class="pilgrim-pager__button pilgrim-pager__next" type="button">次の歩み</button>
+    `;
+    document.body.appendChild(pager);
+
+    const pagerPrev = pager.querySelector('.pilgrim-pager__prev');
+    const pagerNext = pager.querySelector('.pilgrim-pager__next');
+    const pagerLabel = pager.querySelector('.pilgrim-pager__label');
+    const pagerTitle = pager.querySelector('.pilgrim-pager__title');
+    const pagerDotsHost = pager.querySelector('.pilgrim-pager__dots');
+
+    const stoneNav = document.querySelector('.stone-nav');
+
+    const renderDots = host => {
+      if (!host) return [];
+      host.innerHTML = '';
+      return Array.from({ length: totalSteps }).map((_, i) => {
+        const b = document.createElement('span');
+        b.className = 'stone-dot';
+        b.dataset.index = String(i + 1);
+        host.appendChild(b);
+        return b;
+      });
+    };
+
+    const navDots = renderDots(stoneNav);
+    let pagerDots = renderDots(pagerDotsHost);
+
+    const toneClasses = [
+      'tone-symbol',
+      'tone-believer',
+      'tone-first-step',
+      'tone-aruku-god',
+      'tone-guideposts',
+      'tone-record',
+      'tone-terms',
+      'tone-daily',
+      'tone-taboo',
+      'tone-scripture',
+      'tone-daily-step',
+      'tone-faq',
+      'tone-closing'
+    ];
+
+    const updateCounter = target => {
+      if (!target) return;
+      document.body.classList.add('content-entered');
+      const index = Number(target.getAttribute('data-step-index'));
+      if (!index || index % 1 !== 0) return;
+
+      currentStep = index;
+      counter.innerHTML = `歩み <strong>${index}</strong> / ${totalSteps} <span class="walk-counter-nav" aria-hidden="true"></span>`;
+      const counterDots = renderDots(counter.querySelector('.walk-counter-nav'));
+      pagerDots = renderDots(pagerDotsHost);
+
+      [...navDots, ...counterDots, ...pagerDots].forEach(dot => {
+        if (!dot) return;
+        dot.classList.toggle('is-active', Number(dot.dataset.index) === index);
+      });
+
+      const title = target.querySelector('h2')?.textContent?.trim() || `第${index}歩`;
+      if (pagerLabel) pagerLabel.innerHTML = `歩み <strong>${index}</strong> / ${totalSteps}`;
+      if (pagerTitle) pagerTitle.textContent = title;
+      if (pagerPrev) pagerPrev.disabled = index <= 1;
+      if (pagerNext) pagerNext.disabled = index >= totalSteps;
+
+      toneClasses.forEach(c => document.body.classList.remove(c));
+      const tone = target.dataset.tone;
+      if (tone) document.body.classList.add(`tone-${tone}`);
+    };
+
+    const scrollToStep = step => {
+      const target = steppedSections.find(section => Number(section.getAttribute('data-step-index')) === step);
+      if (!target) return;
+      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    };
+
+    if (pagerPrev) {
+      pagerPrev.addEventListener('click', () => scrollToStep(Math.max(1, currentStep - 1)));
+    }
+
+    if (pagerNext) {
+      pagerNext.addEventListener('click', () => scrollToStep(Math.min(totalSteps, currentStep + 1)));
+    }
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          updateCounter(entry.target);
+        });
+      }, { threshold: 0.2, rootMargin: '0px 0px -12% 0px' });
+
+      sections.forEach(section => observer.observe(section));
+    } else {
+      sections.forEach(section => section.classList.add('is-visible'));
+      if (steppedSections[0]) updateCounter(steppedSections[0]);
+    }
+
+    document.querySelectorAll('.faq details').forEach(detail => {
+      const summary = detail.querySelector('summary');
+      if (!summary) return;
+      summary.setAttribute('role', 'button');
+      summary.setAttribute('aria-expanded', detail.open ? 'true' : 'false');
+      detail.addEventListener('toggle', () => summary.setAttribute('aria-expanded', detail.open ? 'true' : 'false'));
+    });
+
+    const arukuSayings = [
+      "最初の一歩は、遠くへ行くためではなく、今日を始めるためにある。",
+      "歩ける日は歩けばよい。歩けない日は、道を守るために休めばよい。",
+      "足跡は、誰かに見せるためではなく、自分がここにいたことを静かに残すためにある。",
+      "多く歩いた日だけが、よい日ではない。自分を傷つけなかった日も、よい日である。",
+      "道は急ぐ者だけに開かれない。ゆっくり歩く者の前にも、静かに続いている。",
+      "歩数は、あなたの価値ではない。今日の体を知るための、小さな記録である。",
+      "立ち止まることは、道を捨てることではない。次の一歩を守る時間である。",
+      "誰かの歩幅を奪ってはならない。その人の道は、その人の足でしか進めない。",
+      "アルク神は、遠くへ行った者だけを見ているのではない。戻る者、休む者、迷う者も見ている。",
+      "疲れた足を責めてはならない。その足は、今日まであなたを運んできた。",
+      "歩けなかった日を、空白にしなくてよい。休んだ日もまた、道の一部である。",
+      "人の歩数を見て、その人の祈りを測ってはならない。",
+      "早く進むことよりも、自分を壊さず進むことを大切にせよ。",
+      "一歩は小さくてよい。小さな一歩も、道に触れている。",
+      "歩くことは祈りであり、休むことはその祈りを守ることである。",
+      "道に迷った日は、間違えた日ではない。見えていなかった景色に出会った日である。",
+      "昨日の歩みを、今日の自分に押しつけなくてよい。",
+      "他人を急かす言葉は、道に石を置くことに似ている。",
+      "誰かと歩くときは、速さではなく、隣にいることを大切にせよ。",
+      "靴を整えることも、祈りの支度である。",
+      "今日の一歩が少なくても、あなたが道から離れたわけではない。",
+      "歩き続けるために、休む日を持ってよい。",
+      "足元を見ることは、下を向くことではない。今いる場所を知ることである。",
+      "道は、勝つためにあるのではない。生きる場所へ向かうためにある。",
+      "あなたの歩みは、誰かの歩みより上でも下でもない。",
+      "遠回りした日にも、遠回りの祈りがある。",
+      "一日の終わりに歩数を見るなら、裁くためではなく、受け止めるために見よ。",
+      "歩ける体に感謝し、歩けない体を責めない。",
+      "急がない歩みの中にも、確かな前進はある。",
+      "道の途中で休む人を、置き去りにしてはならない。",
+      "歩いた距離よりも、歩み方に心を向けよ。",
+      "祈りは声に限られない。静かな足音にも、祈りは宿る。",
+      "歩く人を誇らず、休む人を軽んじない。",
+      "今日の体に合う道を選ぶことも、ひとつの知恵である。",
+      "道が見えない日は、見えるところまででよい。",
+      "足跡は消えても、歩いたことは失われない。",
+      "強い歩みとは、無理をすることではない。戻れる余白を残すことである。",
+      "誰かを待つことも、アルク神が喜ぶ歩みである。",
+      "歩みを比べる場所に、祈りは残りにくい。",
+      "今日も道はある。進む日にも、休む日にも、静かにある。",
+      "歩みは、誰かに証明するためではなく、自分を生かすためにある。",
+      "休むことを選べる者は、次の道を粗末にしない。",
+      "一歩を小さくした日は、祈りを弱めた日ではない。",
+      "道の長さより、足を大切にしたかを見よ。",
+      "歩く者は、歩けぬ者の隣に座ることも覚えよ。",
+      "急ぐ足音だけが、神に届くわけではない。",
+      "今日の歩幅を、昨日の誇りで乱してはならない。",
+      "歩みを続ける者は、休む場所にも感謝する。",
+      "足が止まる日は、心が追いつく日である。",
+      "歩く理由を失った日は、靴をそろえるだけでもよい。",
+      "道は、強い者だけのものではない。迷う者にも、休む者にも開かれている。",
+      "人の遅さを責める前に、その人の荷物を想像せよ。",
+      "歩数が少ない日にも、守られた祈りがある。",
+      "遠くの道を求めすぎて、足元の一歩を忘れてはならない。",
+      "歩くことを誇るより、歩ける今日を静かに受け止めよ。",
+      "止まった場所にも、道の意味は残っている。",
+      "誰かの歩みを待つ時間は、無駄ではない。共に進むための祈りである。",
+      "足音が小さくても、歩んだ事実は小さくならない。",
+      "自分の道を進む者は、他人の道を踏み荒らさない。",
+      "今日の一歩を選べたなら、その日にはもう祈りがある。"
+    ];
+
+    const dailyStepButton = document.querySelector('.daily-step-button');
+    const dailyStepText = document.querySelector('.daily-step-text');
+    let lastSayingIndex = -1;
+
+    const showRandomSaying = () => {
+      if (!dailyStepText) return;
+      let idx = Math.floor(Math.random() * arukuSayings.length);
+
+      if (arukuSayings.length > 1) {
+        while (idx === lastSayingIndex) idx = Math.floor(Math.random() * arukuSayings.length);
+      }
+
+      lastSayingIndex = idx;
+      dailyStepText.classList.remove('is-swapping');
+      void dailyStepText.offsetWidth;
+      dailyStepText.textContent = arukuSayings[idx];
+      dailyStepText.classList.add('is-swapping');
+    };
+
+    if (dailyStepButton && dailyStepText) {
+      dailyStepButton.addEventListener('click', showRandomSaying);
+      showRandomSaying();
+    }
+
+
+
+    const lambdaCopyButton = document.querySelector('.lambda-copy-button');
+    const lambdaToast = document.createElement('div');
+    lambdaToast.className = 'lambda-toast';
+    lambdaToast.setAttribute('role', 'status');
+    lambdaToast.setAttribute('aria-live', 'polite');
+    lambdaToast.innerHTML = 'λのテキストがコピーされました<br>任意の場所にペーストして下さい';
+    document.body.appendChild(lambdaToast);
+
+    let lambdaToastTimer = null;
+
+    const showLambdaToast = () => {
+      if (lambdaToastTimer) window.clearTimeout(lambdaToastTimer);
+      lambdaToast.classList.add('is-visible');
+      lambdaToastTimer = window.setTimeout(() => {
+        lambdaToast.classList.remove('is-visible');
+      }, 2000);
+    };
+
+    const copyLambdaText = async () => {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText('λ');
+        } else {
+          const temp = document.createElement('textarea');
+          temp.value = 'λ';
+          temp.setAttribute('readonly', '');
+          temp.style.position = 'fixed';
+          temp.style.left = '-9999px';
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          temp.remove();
+        }
+        showLambdaToast();
+      } catch (_error) {
+        showLambdaToast();
+      }
+    };
+
+    if (lambdaCopyButton) {
+      lambdaCopyButton.addEventListener('click', copyLambdaText);
+    }
+
+
+    const touchFootprint = document.createElement('div');
+    touchFootprint.className = 'touch-footprint';
+    touchFootprint.setAttribute('aria-hidden', 'true');
+    touchFootprint.textContent = '👣';
+    document.body.appendChild(touchFootprint);
+
+    let activePointerId = null;
+    let touchHideTimer = null;
+
+    const moveTouchFootprint = (clientX, clientY) => {
+      if (!touchFootprint) return;
+      touchFootprint.style.left = `${clientX}px`;
+      touchFootprint.style.top = `${clientY}px`;
+    };
+
+    const showTouchFootprint = (clientX, clientY) => {
+      if (touchHideTimer) {
+        window.clearTimeout(touchHideTimer);
+        touchHideTimer = null;
+      }
+      moveTouchFootprint(clientX, clientY);
+      document.body.classList.add('is-finger-walking');
+    };
+
+    const hideTouchFootprint = () => {
+      touchHideTimer = window.setTimeout(() => {
+        document.body.classList.remove('is-finger-walking');
+        activePointerId = null;
+      }, 80);
+    };
+
+    if (window.PointerEvent) {
+      window.addEventListener('pointerdown', event => {
+        if (event.pointerType && event.pointerType !== 'touch') return;
+        activePointerId = event.pointerId;
+        showTouchFootprint(event.clientX, event.clientY);
+      }, { passive: true });
+
+      window.addEventListener('pointermove', event => {
+        if (activePointerId !== event.pointerId) return;
+        showTouchFootprint(event.clientX, event.clientY);
+      }, { passive: true });
+
+      window.addEventListener('pointerup', event => {
+        if (activePointerId === event.pointerId) hideTouchFootprint();
+      }, { passive: true });
+
+      window.addEventListener('pointercancel', event => {
+        if (activePointerId === event.pointerId) hideTouchFootprint();
+      }, { passive: true });
+    } else {
+      window.addEventListener('touchstart', event => {
+        const touch = event.touches[0];
+        if (!touch) return;
+        showTouchFootprint(touch.clientX, touch.clientY);
+      }, { passive: true });
+
+      window.addEventListener('touchmove', event => {
+        const touch = event.touches[0];
+        if (!touch) return;
+        showTouchFootprint(touch.clientX, touch.clientY);
+      }, { passive: true });
+
+      window.addEventListener('touchend', hideTouchFootprint, { passive: true });
+      window.addEventListener('touchcancel', hideTouchFootprint, { passive: true });
+    }
+
+
+    const footstepsLayer = document.querySelector('.ambient-footsteps');
+    let ambientFootstepTimer = null;
+    let ambientStepCount = 0;
+    let ambientDirection = -1;
+    let ambientProgress = 0;
+    let ambientStartY = 18;
+    let ambientEndY = 72;
+
+    function resetAmbientPath() {
+      ambientDirection *= -1;
+      ambientProgress = 0;
+
+      const minY = 14;
+      const maxY = 82;
+      ambientStartY = minY + Math.random() * 24;
+      ambientEndY = maxY - Math.random() * 24;
+
+      if (Math.random() > 0.5) {
+        const temp = ambientStartY;
+        ambientStartY = ambientEndY;
+        ambientEndY = temp;
+      }
+    }
+
+    function createAmbientFootprint() {
+      if (!footstepsLayer || reduceMotionQuery.matches || document.visibilityState === 'hidden') return;
+
+      ambientProgress += 0.065;
+
+      if (ambientProgress > 1) resetAmbientPath();
+
+      const x = ambientDirection === -1 ? 100 - ambientProgress * 110 : -10 + ambientProgress * 110;
+      const y = ambientStartY + (ambientEndY - ambientStartY) * ambientProgress;
+      const rotateBase = ambientDirection === -1 ? -52 : 52;
+      const rotate = rotateBase + (Math.random() * 8 - 4);
+
+      const foot = document.createElement('span');
+      foot.className = `ambient-footprint ${ambientStepCount % 2 === 0 ? 'is-right' : 'is-left'}`;
+      foot.style.left = `${x}%`;
+      foot.style.top = `${y}%`;
+      foot.style.setProperty('--rotate', `${rotate}deg`);
+
+      footstepsLayer.appendChild(foot);
+      ambientStepCount += 1;
+
+      const footprints = footstepsLayer.querySelectorAll('.ambient-footprint');
+      if (footprints.length > 28) footprints[0].remove();
+
+      window.setTimeout(() => foot.remove(), 9200);
+    }
+
+    function startAmbientFootsteps() {
+      if (!footstepsLayer || reduceMotionQuery.matches || ambientFootstepTimer || document.visibilityState === 'hidden') return;
+      ambientFootstepTimer = window.setInterval(createAmbientFootprint, 400);
+    }
+
+    function stopAmbientFootsteps() {
+      if (!ambientFootstepTimer) return;
+      window.clearInterval(ambientFootstepTimer);
+      ambientFootstepTimer = null;
+    }
+
+    try {
+      resetAmbientPath();
+      startAmbientFootsteps();
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          stopAmbientFootsteps();
+        } else {
+          startAmbientFootsteps();
+        }
+      });
+
+      if (typeof reduceMotionQuery.addEventListener === 'function') {
+        reduceMotionQuery.addEventListener('change', event => {
+          if (event.matches) {
+            stopAmbientFootsteps();
+            if (footstepsLayer) footstepsLayer.innerHTML = '';
+          } else {
+            startAmbientFootsteps();
+          }
+        });
+      }
+    } catch (_error) {
+      stopAmbientFootsteps();
+    }
+  </script>
+</body>
+</html>
