@@ -1545,6 +1545,51 @@
         transform: none !important;
       }
     }
+
+
+    /* =========================================================
+       操作性・読み込み・UI 改善レイヤー（文言不変 / 2026-06-19）
+       4役割(デザイン/UX/性能/アクセシビリティ)のテスト結果に基づく、
+       文言を変えない加算的な改善のみを集約する。
+       ========================================================= */
+
+    /* D-04: ヒーローのキャッチコピーの可読性と主役感を補強（色は金のまま維持） */
+    .catch {
+      letter-spacing: .04em;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+    }
+
+    /* U-04 / U-03: 巡礼ページャーのタップ領域を44pxに、押下/無効の手応えを明確化 */
+    .pilgrim-pager__button { min-height: 44px; }
+    .pilgrim-pager__button:not(:disabled):hover { filter: brightness(1.08); }
+    .pilgrim-pager__button:active { transform: translateY(1px); filter: brightness(1.12); }
+    .pilgrim-pager__button:disabled { opacity: .3; filter: grayscale(.4); box-shadow: none; }
+
+    /* U-05: 「一歩を踏み出す」押下中の沈み込みフィードバック（無反応感の解消） */
+    body.is-stepping #stepButton {
+      transform: translateY(1px) scale(.98);
+      filter: brightness(1.12);
+      opacity: .92;
+    }
+
+    /* U-02: ページャー移動時に着地セクション上端へ余白を確保 */
+    .walk-section { scroll-margin-top: 1rem; }
+
+    /* P-07: 合成できない left/top を will-change から除外 */
+    .touch-footprint { will-change: transform, opacity; }
+
+    /* U-06 / A-06: 指足跡を控えめ化し、読書中の妨げを軽減 */
+    body.is-finger-walking .touch-footprint { opacity: .55; }
+
+    /* U-01 / D-07: スマホでは下部ページャーと重複・重なる歩みカウンターを隠し、ページャーへ一本化 */
+    @media (max-width: 699px) {
+      body.js-enabled .walk-counter { display: none; }
+    }
+
+    /* A-06 / U-06: 動きを抑える設定では指足跡を表示しない */
+    @media (prefers-reduced-motion: reduce) {
+      .touch-footprint { display: none; }
+    }
   </style>
 </head>
 
@@ -1575,7 +1620,7 @@
   </header>
 
   <main id="main" class="container main-flow">
-    <nav class="stone-nav" aria-label="章のしるべ"></nav>
+    <nav class="stone-nav" aria-label="章のしるべ" aria-hidden="true"></nav>
 
     <section class="section walk-section symbol-section" id="symbol" data-step-index="1" data-tone="symbol">
       <div class="container symbol-layout">
@@ -1585,6 +1630,8 @@
             data-symbol-srcs="IMG_7360.jpeg|assets/IMG_7360.jpeg"
             alt="アルク教の教団シンボル。青い円の中に、金色の歩く足が描かれている。"
             class="symbol-image"
+            width="1024"
+            height="1024"
             loading="lazy"
             decoding="async"
           />
@@ -1811,7 +1858,7 @@
       <p class="section-kicker">問いの場</p>
       <h2>道の途中で生まれる問い</h2>
       <p class="section-lead">迷ったときは、問いながら歩けばよい。</p>
-      <div class="faq" role="list">
+      <div class="faq">
         <details>
           <summary>Q1. アルク教は、毎日たくさん歩く宗教ですか？</summary>
           <p>いいえ。歩数の多さを競いません。</p>
@@ -1888,12 +1935,15 @@
 
     if (stepButton && firstSection) {
       stepButton.addEventListener('click', () => {
+        if (document.body.classList.contains('is-stepping')) return;
         document.body.classList.add('is-stepping');
-        const delay = reduceMotion ? 120 : 860;
+        stepButton.setAttribute('aria-disabled', 'true');
+        const delay = reduceMotion ? 120 : 640;
         window.setTimeout(() => {
           firstSection.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
           document.body.classList.add('content-entered');
           document.body.classList.remove('is-stepping');
+          stepButton.removeAttribute('aria-disabled');
           document.body.classList.add('arrived-symbol');
           window.setTimeout(() => document.body.classList.remove('arrived-symbol'), reduceMotion ? 100 : 900);
         }, delay);
@@ -1906,8 +1956,9 @@
     const counter = document.createElement('p');
     counter.className = 'walk-counter';
     counter.setAttribute('aria-live', 'polite');
-    counter.innerHTML = `歩み <strong>1</strong> / ${totalSteps} <span class="walk-counter-nav" aria-hidden="true"></span>`;
+    counter.innerHTML = `歩み <strong>1</strong> / ${totalSteps}`;
     document.body.appendChild(counter);
+    const counterValue = counter.querySelector('strong');
 
     let currentStep = 1;
     const pager = document.createElement('nav');
@@ -1970,11 +2021,9 @@
       if (!index || index % 1 !== 0) return;
 
       currentStep = index;
-      counter.innerHTML = `歩み <strong>${index}</strong> / ${totalSteps} <span class="walk-counter-nav" aria-hidden="true"></span>`;
-      const counterDots = renderDots(counter.querySelector('.walk-counter-nav'));
-      pagerDots = renderDots(pagerDotsHost);
+      if (counterValue) counterValue.textContent = index;
 
-      [...navDots, ...counterDots, ...pagerDots].forEach(dot => {
+      [...navDots, ...pagerDots].forEach(dot => {
         if (!dot) return;
         dot.classList.toggle('is-active', Number(dot.dataset.index) === index);
       });
