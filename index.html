@@ -1760,6 +1760,69 @@
       from { opacity: .55; transform: translateY(6px); }
       to   { opacity: 1; transform: none; }
     }
+
+
+    /* =========================================================
+       追加: 足あと演出（タップ=3秒／スワイプ=方向に1秒間隔）＋
+       ページャーUI改善（文言不変 / 2026-06-19）
+       ========================================================= */
+
+    /* 足あとレイヤー（指追従の旧演出は廃止し、置き残し式へ） */
+    .touch-prints {
+      position: fixed;
+      inset: 0;
+      z-index: 1150;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .touch-print {
+      position: absolute;
+      transform: translate(-50%, -55%) rotate(var(--a, 0deg));
+      font-size: 1.5rem;
+      line-height: 1;
+      opacity: 0;
+      pointer-events: none;
+      filter: drop-shadow(0 0 8px rgba(191, 164, 106, .3));
+      animation: touchPrintLife var(--life, 1000ms) ease-out forwards;
+    }
+    @keyframes touchPrintLife {
+      0%   { opacity: 0;   transform: translate(-50%, -55%) rotate(var(--a, 0deg)) scale(.82); }
+      12%  { opacity: .92; transform: translate(-50%, -55%) rotate(var(--a, 0deg)) scale(1); }
+      72%  { opacity: .92; transform: translate(-50%, -55%) rotate(var(--a, 0deg)) scale(1); }
+      100% { opacity: 0;   transform: translate(-50%, -55%) rotate(var(--a, 0deg)) scale(1.02); }
+    }
+    @media (max-width: 420px) {
+      .touch-print { font-size: 1.4rem; }
+    }
+
+    /* ページャーUI改善: 前/次に方向アフォーダンス（CSS描画の矢じり・文言は不変） */
+    .pilgrim-pager__prev::before,
+    .pilgrim-pager__next::after {
+      content: "";
+      display: inline-block;
+      width: .4em;
+      height: .4em;
+      opacity: .85;
+      vertical-align: middle;
+    }
+    .pilgrim-pager__prev::before {
+      border-left: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(45deg);
+      margin-right: .45em;
+    }
+    .pilgrim-pager__next::after {
+      border-right: 2px solid currentColor;
+      border-top: 2px solid currentColor;
+      transform: rotate(45deg);
+      margin-left: .45em;
+    }
+
+    /* ページャーUI改善: 通過済みドット＝歩いた道として淡く金、現在地はより明確に */
+    .stone-dot { transition: background .3s ease, box-shadow .3s ease, transform .3s ease; }
+    .stone-dot.is-passed { background: rgba(191, 164, 106, .5); }
+    .pilgrim-pager__dots .stone-dot.is-active { transform: scaleY(1.45); }
+    .pilgrim-pager__title { letter-spacing: .02em; }
   </style>
 </head>
 
@@ -2198,7 +2261,9 @@
 
       [...navDots, ...pagerDots].forEach(dot => {
         if (!dot) return;
-        dot.classList.toggle('is-active', Number(dot.dataset.index) === index);
+        const di = Number(dot.dataset.index);
+        dot.classList.toggle('is-active', di === index);
+        dot.classList.toggle('is-passed', di < index);
       });
 
       const title = target.querySelector('h2')?.textContent?.trim() || `第${index}歩`;
@@ -2397,71 +2462,79 @@
     }
 
 
-    const touchFootprint = document.createElement('div');
-    touchFootprint.className = 'touch-footprint';
-    touchFootprint.setAttribute('aria-hidden', 'true');
-    touchFootprint.textContent = '👣';
-    document.body.appendChild(touchFootprint);
+    /* 足あと: タップした場所に3秒、スワイプ方向に一定間隔で1秒残す👣 */
+    const printLayer = document.createElement('div');
+    printLayer.className = 'touch-prints';
+    printLayer.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(printLayer);
 
-    let activePointerId = null;
-    let touchHideTimer = null;
+    const TAP_MOVE = 12;     // これ未満の移動はタップ扱い
+    const SWIPE_GAP = 44;    // スワイプ中に足あとを落とす間隔(px)
+    let printPointerId = null;
+    let printStartX = 0, printStartY = 0;
+    let printLastX = 0, printLastY = 0;
+    let printDidSwipe = false;
 
-    const moveTouchFootprint = (clientX, clientY) => {
-      if (!touchFootprint) return;
-      touchFootprint.style.left = `${clientX}px`;
-      touchFootprint.style.top = `${clientY}px`;
+    const dropFootprint = (x, y, lifeMs, angle) => {
+      if (reduceMotionQuery.matches) return;
+      const fp = document.createElement('span');
+      fp.className = 'touch-print';
+      fp.textContent = '👣';
+      fp.style.left = `${x}px`;
+      fp.style.top = `${y}px`;
+      fp.style.setProperty('--life', `${lifeMs}ms`);
+      if (typeof angle === 'number') fp.style.setProperty('--a', `${angle}deg`);
+      printLayer.appendChild(fp);
+      window.setTimeout(() => fp.remove(), lifeMs + 220);
+      if (printLayer.childElementCount > 40) printLayer.firstElementChild?.remove();
     };
 
-    const showTouchFootprint = (clientX, clientY) => {
-      if (touchHideTimer) {
-        window.clearTimeout(touchHideTimer);
-        touchHideTimer = null;
+    const printDown = (id, x, y) => {
+      printPointerId = id;
+      printStartX = printLastX = x;
+      printStartY = printLastY = y;
+      printDidSwipe = false;
+    };
+
+    const printMove = (id, x, y) => {
+      if (id !== printPointerId) return;
+      const dx = x - printLastX, dy = y - printLastY;
+      if (Math.hypot(dx, dy) >= SWIPE_GAP) {
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+        dropFootprint(x, y, 1000, angle);   // スワイプ: 方向に向けて1秒
+        printLastX = x;
+        printLastY = y;
+        printDidSwipe = true;
       }
-      moveTouchFootprint(clientX, clientY);
-      document.body.classList.add('is-finger-walking');
     };
 
-    const hideTouchFootprint = () => {
-      touchHideTimer = window.setTimeout(() => {
-        document.body.classList.remove('is-finger-walking');
-        activePointerId = null;
-      }, 80);
+    const printUp = (id, x, y) => {
+      if (id !== printPointerId) return;
+      if (!printDidSwipe && Math.hypot(x - printStartX, y - printStartY) < TAP_MOVE) {
+        dropFootprint(x, y, 3000);          // タップ: その場に3秒
+      }
+      printPointerId = null;
     };
 
     if (window.PointerEvent) {
-      window.addEventListener('pointerdown', event => {
-        if (event.pointerType && event.pointerType !== 'touch') return;
-        activePointerId = event.pointerId;
-        showTouchFootprint(event.clientX, event.clientY);
-      }, { passive: true });
-
-      window.addEventListener('pointermove', event => {
-        if (activePointerId !== event.pointerId) return;
-        showTouchFootprint(event.clientX, event.clientY);
-      }, { passive: true });
-
-      window.addEventListener('pointerup', event => {
-        if (activePointerId === event.pointerId) hideTouchFootprint();
-      }, { passive: true });
-
-      window.addEventListener('pointercancel', event => {
-        if (activePointerId === event.pointerId) hideTouchFootprint();
-      }, { passive: true });
+      window.addEventListener('pointerdown', e => printDown(e.pointerId, e.clientX, e.clientY), { passive: true });
+      window.addEventListener('pointermove', e => printMove(e.pointerId, e.clientX, e.clientY), { passive: true });
+      window.addEventListener('pointerup', e => printUp(e.pointerId, e.clientX, e.clientY), { passive: true });
+      window.addEventListener('pointercancel', e => { if (e.pointerId === printPointerId) printPointerId = null; }, { passive: true });
     } else {
-      window.addEventListener('touchstart', event => {
-        const touch = event.touches[0];
-        if (!touch) return;
-        showTouchFootprint(touch.clientX, touch.clientY);
+      window.addEventListener('touchstart', e => {
+        const t = e.touches[0];
+        if (t) printDown('t', t.clientX, t.clientY);
       }, { passive: true });
-
-      window.addEventListener('touchmove', event => {
-        const touch = event.touches[0];
-        if (!touch) return;
-        showTouchFootprint(touch.clientX, touch.clientY);
+      window.addEventListener('touchmove', e => {
+        const t = e.touches[0];
+        if (t) printMove('t', t.clientX, t.clientY);
       }, { passive: true });
-
-      window.addEventListener('touchend', hideTouchFootprint, { passive: true });
-      window.addEventListener('touchcancel', hideTouchFootprint, { passive: true });
+      window.addEventListener('touchend', e => {
+        const t = e.changedTouches[0];
+        if (t) printUp('t', t.clientX, t.clientY); else printPointerId = null;
+      }, { passive: true });
+      window.addEventListener('touchcancel', () => { printPointerId = null; }, { passive: true });
     }
 
 
