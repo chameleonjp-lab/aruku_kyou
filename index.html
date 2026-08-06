@@ -1590,239 +1590,6 @@
     @media (prefers-reduced-motion: reduce) {
       .touch-footprint { display: none; }
     }
-
-
-    /* =========================================================
-       荘厳演出レイヤー「神との会合」（文言不変 / 2026-06-19）
-       4役割ブレスト(光L/動M/象S/質T)の採用18案。すべて transform/
-       opacity/filter と既存 tone-*・is-visible・arrived-* への加算のみ。
-       prefers-reduced-motion は既存の全停止ブロックに自然吸収される。
-       ========================================================= */
-
-    /* 第2幕 背骨: 巡礼の深まり（--depth=現在歩/総歩 をJSが更新） */
-    body { --communion-glow: calc(var(--depth, 0) * .05); --communion-haze: calc(var(--depth, 0) * .03); }
-    body::before {
-      background:
-        radial-gradient(80% 60% at 50% 20%, rgba(191, 164, 106, calc(var(--bg-glow-opacity) + var(--communion-glow))), transparent 70%),
-        radial-gradient(90% 70% at 50% 85%, rgba(216, 208, 191, calc(var(--bg-haze-opacity) - var(--communion-haze))), transparent 75%);
-    }
-    /* 第1幕: 第一歩の夜明け（入場時に発光を一時底上げ） */
-    body.is-stepping,
-    body.arrived-symbol { --communion-glow: calc(var(--depth, 0) * .05 + .05); }
-    /* 第3幕: 会合の成立（締め到達で最大発光＋見出しグロー） */
-    body.arrived-closing { --communion-glow: calc(var(--depth, 0) * .05 + .03); }
-    body.arrived-closing .closing h2 {
-      text-shadow: 0 0 18px rgba(191, 164, 106, .28);
-      transition: text-shadow 1.2s ease;
-    }
-
-    /* 第2幕 大気: 巡礼のヴィネット（四隅減光・中央へ視線を集める） */
-    body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      background: radial-gradient(120% 100% at 50% 42%, transparent 56%, rgba(8, 11, 12, .26) 100%);
-      opacity: calc(.7 + var(--depth, 0) * .25);
-      transition: opacity .8s ease;
-    }
-
-    /* 第1幕: 天蓋の光柱（斜めの極薄金条がごく緩やかに流れる） */
-    .godlight {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-      mix-blend-mode: screen;
-      opacity: .7;
-      background: repeating-linear-gradient(14deg,
-        transparent 0, transparent 38px,
-        rgba(191, 164, 106, .05) 46px, transparent 60px);
-      animation: godlightDrift 26s ease-in-out infinite alternate;
-    }
-    @keyframes godlightDrift {
-      from { transform: translateX(-3%) skewX(0deg); }
-      to   { transform: translateX(3%) skewX(-1.5deg); }
-    }
-
-    /* 第1幕: 神の呼気（presenceの超低速・低振幅の呼吸） */
-    .presence::before { animation: presenceBreath 9s ease-in-out infinite; }
-    @keyframes presenceBreath {
-      0%, 100% { opacity: .78; transform: translateX(-50%) scale(1); }
-      50%      { opacity: .9;  transform: translateX(-50%) scale(1.045); }
-    }
-
-    /* 第1幕: シンボルの目覚め（到達時に一度だけ息づく） */
-    body.arrived-symbol #symbol .symbol-image-wrap { animation: symbolAwaken .9s ease; }
-    @keyframes symbolAwaken {
-      0%   { transform: translateY(0) scale(1); }
-      45%  { transform: translateY(0) scale(1.014); }
-      100% { transform: translateY(0) scale(1); }
-    }
-
-    /* 第3幕: 聖句に満ちる光（is-visibleで一度だけ・文字の背面 z:-1） */
-    .scripture::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      border-radius: inherit;
-      background: radial-gradient(70% 60% at 50% 30%, rgba(191, 164, 106, .16), transparent 70%);
-      opacity: 0;
-      transition: opacity 2.2s ease-out;
-    }
-    body.js-enabled .scripture.is-visible::after { opacity: 1; }
-
-    /* 第3幕: 沈黙の間（聖句3行を重力イージング＋遅延拡張） */
-    body.js-enabled .scripture-lines p {
-      transition: opacity .9s cubic-bezier(.16, 1, .3, 1), transform .9s cubic-bezier(.16, 1, .3, 1);
-    }
-    body.js-enabled .walk-section.is-visible .scripture-lines p:nth-child(2) { transition-delay: .35s; }
-    body.js-enabled .walk-section.is-visible .scripture-lines p:nth-child(3) { transition-delay: .75s; }
-
-    /* 第4幕: λの初点灯（信者証セクション到達で静かに灯す・点滅させない） */
-    .lambda-mark { transition: text-shadow 1.2s ease, box-shadow 1.2s ease; }
-    body.js-enabled .believer-section.is-visible .lambda-mark {
-      text-shadow: 0 0 14px rgba(191, 164, 106, .45);
-      box-shadow: 0 0 0 1px var(--ui-gold-line), 0 0 26px rgba(191, 164, 106, .2);
-    }
-    /* 第4幕: λを賜る所作（コピー成功時に単発で脈動） */
-    .lambda-mark.is-bestowed { animation: lambdaBestow .8s ease; }
-    @keyframes lambdaBestow {
-      0%   { transform: scale(1); }
-      40%  { transform: scale(1.06); text-shadow: 0 0 18px rgba(191, 164, 106, .5); }
-      100% { transform: scale(1); }
-    }
-
-    /* 質感: 古紙の繊維（古紙セクションのみ・暗背景は除外・文字の背面 z:-1） */
-    .main-flow > .walk-section:not(.symbol-section):not(.scripture):not(.closing)::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      border-radius: inherit;
-      opacity: .045;
-      mix-blend-mode: multiply;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 140px 140px;
-    }
-
-    /* 質感: 聖刻タイポ（見出し/kickerの字間・和文詰め palt） */
-    .section h2, .scripture h2, .closing h2 { letter-spacing: .04em; font-feature-settings: "palt" 1; }
-    .section-kicker { letter-spacing: .16em; text-indent: .16em; font-feature-settings: "palt" 1; }
-    .scripture h2 { letter-spacing: .12em; text-indent: .12em; }
-
-    /* 質感: 章標の金罫（kicker先頭に短い罫・currentColorで明暗追従） */
-    .section-kicker { display: inline-flex; align-items: center; gap: .5em; text-indent: 0; }
-    .section-kicker::before {
-      content: "";
-      width: 1.4em;
-      height: 1px;
-      flex: 0 0 auto;
-      background: currentColor;
-      opacity: .55;
-    }
-
-    /* 質感: FAQの所作（summaryの左金線がホバー/開で灯る） */
-    .faq summary { transition: border-left-color .25s ease, padding-left .25s ease; }
-    .faq summary:hover { border-left-color: var(--ui-gold-line-strong); padding-left: .85rem; }
-    .faq details[open] summary { border-left-color: var(--ui-gold-line-strong); }
-
-    /* 質感: 石畳の手応え（ボタンのホバー/押下に沈み込みの内影） */
-    .button:not(:disabled):hover,
-    .pilgrim-pager__button:not(:disabled):hover,
-    .daily-step-button:hover,
-    .lambda-copy-button:hover {
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, .12),
-        inset 0 0 0 1px rgba(255, 255, 255, .06),
-        0 6px 16px rgba(0, 0, 0, .22);
-    }
-    .button:active,
-    .pilgrim-pager__button:not(:disabled):active,
-    .daily-step-button:active,
-    .lambda-copy-button:active { box-shadow: inset 0 2px 6px rgba(0, 0, 0, .3); }
-
-    /* 質感: 格言の結像（quoteFadeをぼかし→結像＋重力イージング） */
-    .daily-step-text.is-swapping { animation: quoteFade .6s cubic-bezier(.16, 1, .3, 1); }
-    @keyframes quoteFade {
-      from { opacity: 0; transform: translateY(6px); filter: blur(2px); }
-      to   { opacity: 1; transform: none; filter: blur(0); }
-    }
-
-    /* 移動: 歩を進める着地（ページャー移動時に着地見出しが静かに入場） */
-    .just-stepped { animation: stepArrive .55s cubic-bezier(.16, 1, .3, 1); }
-    @keyframes stepArrive {
-      from { opacity: .55; transform: translateY(6px); }
-      to   { opacity: 1; transform: none; }
-    }
-
-
-    /* =========================================================
-       追加: 足あと演出（タップ=3秒／スワイプ=方向に1秒間隔）＋
-       ページャーUI改善（文言不変 / 2026-06-19）
-       ========================================================= */
-
-    /* 足あとレイヤー（指追従の旧演出は廃止し、置き残し式へ） */
-    .touch-prints {
-      position: fixed;
-      inset: 0;
-      z-index: 1150;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .touch-print {
-      position: absolute;
-      transform: translate(-50%, -55%) rotate(var(--a, 0deg));
-      font-size: 1.5rem;
-      line-height: 1;
-      opacity: 0;
-      pointer-events: none;
-      filter: drop-shadow(0 0 8px rgba(191, 164, 106, .3));
-      animation: touchPrintLife var(--life, 1000ms) ease-out forwards;
-    }
-    @keyframes touchPrintLife {
-      0%   { opacity: 0;   transform: translate(-50%, -55%) rotate(var(--a, 0deg)) scale(.82); }
-      12%  { opacity: .92; transform: translate(-50%, -55%) rotate(var(--a, 0deg)) scale(1); }
-      72%  { opacity: .92; transform: translate(-50%, -55%) rotate(var(--a, 0deg)) scale(1); }
-      100% { opacity: 0;   transform: translate(-50%, -55%) rotate(var(--a, 0deg)) scale(1.02); }
-    }
-    @media (max-width: 420px) {
-      .touch-print { font-size: 1.4rem; }
-    }
-
-    /* ページャーUI改善: 前/次に方向アフォーダンス（CSS描画の矢じり・文言は不変） */
-    .pilgrim-pager__prev::before,
-    .pilgrim-pager__next::after {
-      content: "";
-      display: inline-block;
-      width: .4em;
-      height: .4em;
-      opacity: .85;
-      vertical-align: middle;
-    }
-    .pilgrim-pager__prev::before {
-      border-left: 2px solid currentColor;
-      border-bottom: 2px solid currentColor;
-      transform: rotate(45deg);
-      margin-right: .45em;
-    }
-    .pilgrim-pager__next::after {
-      border-right: 2px solid currentColor;
-      border-top: 2px solid currentColor;
-      transform: rotate(45deg);
-      margin-left: .45em;
-    }
-
-    /* ページャーUI改善: 通過済みドット＝歩いた道として淡く金、現在地はより明確に */
-    .stone-dot { transition: background .3s ease, box-shadow .3s ease, transform .3s ease; }
-    .stone-dot.is-passed { background: rgba(191, 164, 106, .5); }
-    .pilgrim-pager__dots .stone-dot.is-active { transform: scaleY(1.45); }
-    .pilgrim-pager__title { letter-spacing: .02em; }
   </style>
 </head>
 
@@ -1834,7 +1601,6 @@
     <div class="mist" aria-hidden="true"></div>
     <div class="path" aria-hidden="true"></div>
     <div class="presence" aria-hidden="true"></div>
-    <div class="godlight" aria-hidden="true"></div>
     <div class="gateway__inner container">
       <p class="eyebrow">創作上の架空設定</p>
       <h1 id="gateway-title">アルク教</h1>
@@ -2255,15 +2021,11 @@
       if (!index || index % 1 !== 0) return;
 
       currentStep = index;
-      document.body.style.setProperty('--depth', (index / totalSteps).toFixed(3));
-      document.body.classList.toggle('arrived-closing', index >= totalSteps);
       if (counterValue) counterValue.textContent = index;
 
       [...navDots, ...pagerDots].forEach(dot => {
         if (!dot) return;
-        const di = Number(dot.dataset.index);
-        dot.classList.toggle('is-active', di === index);
-        dot.classList.toggle('is-passed', di < index);
+        dot.classList.toggle('is-active', Number(dot.dataset.index) === index);
       });
 
       const title = target.querySelector('h2')?.textContent?.trim() || `第${index}歩`;
@@ -2281,15 +2043,6 @@
       const target = steppedSections.find(section => Number(section.getAttribute('data-step-index')) === step);
       if (!target) return;
       target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-      if (!reduceMotion) {
-        const heading = target.querySelector('h2');
-        if (heading) {
-          heading.classList.remove('just-stepped');
-          void heading.offsetWidth;
-          heading.classList.add('just-stepped');
-          window.setTimeout(() => heading.classList.remove('just-stepped'), 600);
-        }
-      }
     };
 
     if (pagerPrev) {
@@ -2421,16 +2174,10 @@
     document.body.appendChild(lambdaToast);
 
     let lambdaToastTimer = null;
-    const lambdaMark = document.querySelector('.lambda-mark');
 
     const showLambdaToast = () => {
       if (lambdaToastTimer) window.clearTimeout(lambdaToastTimer);
       lambdaToast.classList.add('is-visible');
-      if (lambdaMark) {
-        lambdaMark.classList.remove('is-bestowed');
-        void lambdaMark.offsetWidth;
-        lambdaMark.classList.add('is-bestowed');
-      }
       lambdaToastTimer = window.setTimeout(() => {
         lambdaToast.classList.remove('is-visible');
       }, 2000);
@@ -2462,79 +2209,71 @@
     }
 
 
-    /* 足あと: タップした場所に3秒、スワイプ方向に一定間隔で1秒残す👣 */
-    const printLayer = document.createElement('div');
-    printLayer.className = 'touch-prints';
-    printLayer.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(printLayer);
+    const touchFootprint = document.createElement('div');
+    touchFootprint.className = 'touch-footprint';
+    touchFootprint.setAttribute('aria-hidden', 'true');
+    touchFootprint.textContent = '👣';
+    document.body.appendChild(touchFootprint);
 
-    const TAP_MOVE = 12;     // これ未満の移動はタップ扱い
-    const SWIPE_GAP = 44;    // スワイプ中に足あとを落とす間隔(px)
-    let printPointerId = null;
-    let printStartX = 0, printStartY = 0;
-    let printLastX = 0, printLastY = 0;
-    let printDidSwipe = false;
+    let activePointerId = null;
+    let touchHideTimer = null;
 
-    const dropFootprint = (x, y, lifeMs, angle) => {
-      if (reduceMotionQuery.matches) return;
-      const fp = document.createElement('span');
-      fp.className = 'touch-print';
-      fp.textContent = '👣';
-      fp.style.left = `${x}px`;
-      fp.style.top = `${y}px`;
-      fp.style.setProperty('--life', `${lifeMs}ms`);
-      if (typeof angle === 'number') fp.style.setProperty('--a', `${angle}deg`);
-      printLayer.appendChild(fp);
-      window.setTimeout(() => fp.remove(), lifeMs + 220);
-      if (printLayer.childElementCount > 40) printLayer.firstElementChild?.remove();
+    const moveTouchFootprint = (clientX, clientY) => {
+      if (!touchFootprint) return;
+      touchFootprint.style.left = `${clientX}px`;
+      touchFootprint.style.top = `${clientY}px`;
     };
 
-    const printDown = (id, x, y) => {
-      printPointerId = id;
-      printStartX = printLastX = x;
-      printStartY = printLastY = y;
-      printDidSwipe = false;
-    };
-
-    const printMove = (id, x, y) => {
-      if (id !== printPointerId) return;
-      const dx = x - printLastX, dy = y - printLastY;
-      if (Math.hypot(dx, dy) >= SWIPE_GAP) {
-        const angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-        dropFootprint(x, y, 1000, angle);   // スワイプ: 方向に向けて1秒
-        printLastX = x;
-        printLastY = y;
-        printDidSwipe = true;
+    const showTouchFootprint = (clientX, clientY) => {
+      if (touchHideTimer) {
+        window.clearTimeout(touchHideTimer);
+        touchHideTimer = null;
       }
+      moveTouchFootprint(clientX, clientY);
+      document.body.classList.add('is-finger-walking');
     };
 
-    const printUp = (id, x, y) => {
-      if (id !== printPointerId) return;
-      if (!printDidSwipe && Math.hypot(x - printStartX, y - printStartY) < TAP_MOVE) {
-        dropFootprint(x, y, 3000);          // タップ: その場に3秒
-      }
-      printPointerId = null;
+    const hideTouchFootprint = () => {
+      touchHideTimer = window.setTimeout(() => {
+        document.body.classList.remove('is-finger-walking');
+        activePointerId = null;
+      }, 80);
     };
 
     if (window.PointerEvent) {
-      window.addEventListener('pointerdown', e => printDown(e.pointerId, e.clientX, e.clientY), { passive: true });
-      window.addEventListener('pointermove', e => printMove(e.pointerId, e.clientX, e.clientY), { passive: true });
-      window.addEventListener('pointerup', e => printUp(e.pointerId, e.clientX, e.clientY), { passive: true });
-      window.addEventListener('pointercancel', e => { if (e.pointerId === printPointerId) printPointerId = null; }, { passive: true });
+      window.addEventListener('pointerdown', event => {
+        if (event.pointerType && event.pointerType !== 'touch') return;
+        activePointerId = event.pointerId;
+        showTouchFootprint(event.clientX, event.clientY);
+      }, { passive: true });
+
+      window.addEventListener('pointermove', event => {
+        if (activePointerId !== event.pointerId) return;
+        showTouchFootprint(event.clientX, event.clientY);
+      }, { passive: true });
+
+      window.addEventListener('pointerup', event => {
+        if (activePointerId === event.pointerId) hideTouchFootprint();
+      }, { passive: true });
+
+      window.addEventListener('pointercancel', event => {
+        if (activePointerId === event.pointerId) hideTouchFootprint();
+      }, { passive: true });
     } else {
-      window.addEventListener('touchstart', e => {
-        const t = e.touches[0];
-        if (t) printDown('t', t.clientX, t.clientY);
+      window.addEventListener('touchstart', event => {
+        const touch = event.touches[0];
+        if (!touch) return;
+        showTouchFootprint(touch.clientX, touch.clientY);
       }, { passive: true });
-      window.addEventListener('touchmove', e => {
-        const t = e.touches[0];
-        if (t) printMove('t', t.clientX, t.clientY);
+
+      window.addEventListener('touchmove', event => {
+        const touch = event.touches[0];
+        if (!touch) return;
+        showTouchFootprint(touch.clientX, touch.clientY);
       }, { passive: true });
-      window.addEventListener('touchend', e => {
-        const t = e.changedTouches[0];
-        if (t) printUp('t', t.clientX, t.clientY); else printPointerId = null;
-      }, { passive: true });
-      window.addEventListener('touchcancel', () => { printPointerId = null; }, { passive: true });
+
+      window.addEventListener('touchend', hideTouchFootprint, { passive: true });
+      window.addEventListener('touchcancel', hideTouchFootprint, { passive: true });
     }
 
 
